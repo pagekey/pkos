@@ -1,17 +1,28 @@
 bits 16
 [org 0x7c00]
-start:
-	mov si, string_to_print	; Set up si register for function call
-	call print_string	
-	mov cx, 0xbeef		; Set up cx for function call
-	call print_hex
+
+	mov si, STR1
+	call print_string
 	
-	jmp $			; Done
+	mov al, 0x2	; number of sectors: 2
+	mov bx, 0x0 	; read memory es:bx
+	mov es, bx	; 0x0:0x9000 = 0x9000
+	mov bx, 0x9000
+	call disk_read
 
-	string_to_print db "I am going to print a hex value: ",0
+	; Print out the character at location read from disk
+	mov ah, 0xe
+	mov al, [0x9200]
+	int 0x10
+	jmp $
 
-%include "src/inc/print_hex.asm"
-%include "src/inc/print_string.asm"
+	STR1: db "Reading from 0x9200: ",0
+
+	%include "src/inc/print_string.asm"
+	%include "src/inc/disk_read.asm"
 
 	times 510-($-$$) db 0
 	dw 0xaa55
+
+times 512 db 'f'
+times 512 db 'x'
