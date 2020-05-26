@@ -2,8 +2,14 @@ all: build
 build:
 	mkdir -p build
 	nasm -fbin first.asm -o build/pkos.bin
+	nasm -fbin challenges/challenge1-1.asm -o build/challenge1-1.bin
+	nasm -fbin challenges/challenge1-2.asm -o build/challenge1-2.bin
+	nasm -fbin challenges/challenge2-1.asm -o build/challenge2-1.bin
+	nasm -fbin challenges/challenge2-2.asm -o build/challenge2-2.bin
+	nasm -fbin challenges/challenge3-1.asm -o build/challenge3-1.bin
+	nasm -fbin challenges/challenge3-2.asm -o build/challenge3-2.bin
 run: build 
-	qemu-system-i386 build/pkos.bin
+	@python3 runscript.py
 iso: build 
 	mkdir -p build/iso
 	dd if=/dev/zero of=build/iso/pkos.img bs=1024 count=1440
