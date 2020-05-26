@@ -57,3 +57,14 @@ make run
 ### [OS7: Making the Jump!](https://www.youtube.com/watch?v=NtZzb9ZJ5Fo&list=PL3Kz_hCNpKSTFCTJtP4-9mkYDVM7rAprW)
 
 **Release Tag: `os7`**
+
+## Resources
+
+Aside from a ton of StackOverflow answers, the following were super helpful in pulling together the information for these lessons:
+
+* [os-dev PDF from University of Birmingham (Nick Blundell)](https://www.cs.bham.ac.uk/~exr/lectures/opsys/10_11/lectures/os-dev.pdf)
+
+* [os-tutorial by cfenollosa on GitHub](https://github.com/cfenollosa/os-tutorial)
+
+* [Ralph Brown's BIOS Interrupt List (Download)](http://www.cs.cmu.edu/~ralf/files.html)
+~                                                                                         
