@@ -1,18 +1,18 @@
-BOOTLOADER=src/boot.asm
+BOOT=src/boot.asm
 KERNEL=src/kernel.c
-BINFILE=build/pkos.bin
 ISOFILE=build/pkos.iso
 ISO_VOLUME_NAME=PKOS
+LINKER=src/linker.ld
+KERNEL_OUT=build/pkos_kernel
 
 all: build
-build:
+build: clean
 	mkdir -p build
-	nasm -fbin ${BOOTLOADER} -o build/boot.bin
-	gcc -ffreestanding -c ${KERNEL} -o build/kernel.o
-	ld -o build/kernel.bin -Ttext 0x1000 build/kernel.o --oformat binary
-	cat build/boot.bin build/kernel.bin > ${BINFILE}
+	nasm -f elf32 ${BOOT} -o build/boot.o
+	gcc -m32 -ffreestanding -c ${KERNEL} -o build/kernel.o
+	ld -m elf_i386 -T ${LINKER} -o ${KERNEL_OUT} build/boot.o build/kernel.o
 run: build 
-	qemu-system-i386 ${BINFILE}
+	qemu-system-i386 -kernel ${KERNEL_OUT}
 iso: build 
 	mkdir -p build/iso
 	dd if=/dev/zero of=build/iso/pkos.img bs=1024 count=1440

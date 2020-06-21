@@ -1,25 +1,19 @@
+#define ROWS 25
+#define COLS 80
+
 void main()
 {
 	char* mem = (char*) 0xb8000;
-	*mem = 'O';
-	mem += 2;
-	*mem = 'S';
-	mem += 2;
-	*mem = '8';
-	mem += 2;
-	*mem = ':';
-	mem += 2;
-	*mem = ' ';
-	mem += 2;
-	*mem = 'K';
-	mem += 2;
-	*mem = 'e';
-	mem += 2;
-	*mem = 'r';
-	mem += 2;
-	*mem = 'n';
-	mem += 2;
-	*mem = 'e';
-	mem += 2;
-	*mem = 'l';
+	// Fill the screen with 'x'
+	int i, j;
+	for (i = 0; i < COLS; i++) {
+		for (j = 0; j < ROWS; j++) {
+			mem[(i + COLS * j)*2] = 'x';
+		}
+	}
+	mem[0] = '-';
+	mem[2] = 'O';
+	mem[4] = 'S';
+	mem[6] = '9';
+	mem[8] = '-';
 }
