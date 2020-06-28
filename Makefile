@@ -3,7 +3,7 @@ KERNEL=src/kernel.c
 ISOFILE=build/pkos.iso
 ISO_VOLUME_NAME=PKOS
 LINKER=src/linker.ld
-KERNEL_OUT=build/pkos_kernel
+KERNEL_OUT=build/pkos.bin
 
 all: build
 build: clean
@@ -12,12 +12,12 @@ build: clean
 	gcc -m32 -ffreestanding -c ${KERNEL} -o build/kernel.o
 	ld -m elf_i386 -T ${LINKER} -o ${KERNEL_OUT} build/boot.o build/kernel.o
 run: build 
-	qemu-system-i386 -kernel ${KERNEL_OUT}
+	qemu-system-i386 -kernel ${KERNEL_OUT} -monitor stdio
 iso: build 
-	mkdir -p build/iso
-	dd if=/dev/zero of=build/iso/pkos.img bs=1024 count=1440
-	dd if=${BINFILE} of=build/iso/pkos.img seek=0 count=1 conv=notrunc
-	genisoimage -quiet -V '${ISO_VOLUME_NAME}' -input-charset iso8859-1 -o ${ISOFILE} -b pkos.img -hide build/iso/pkos.img build/iso
+	mkdir -p build/iso/boot/grub
+	cp grub.cfg build/iso/boot/grub
+	cp ${KERNEL_OUT} build/iso/boot/grub
+	grub-mkrescue -o build/pkos.iso build/iso
 	rm -rf build/iso
 run-iso: iso
 	qemu-system-i386 -cdrom ${ISOFILE} 
