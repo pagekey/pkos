@@ -1,4 +1,4 @@
-BOOT=src/boot.asm
+BOOT=src/kernel.asm
 KERNEL=src/kernel.c
 ISOFILE=build/pkos.iso
 ISO_VOLUME_NAME=PKOS
