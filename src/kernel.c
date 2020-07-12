@@ -35,7 +35,7 @@ struct IDT_entry IDT[IDT_SIZE]; // This is our entire IDT. Room for 256 interrup
 
 void load_idt() {
 	// Get the address of the keyboard_handler code in kernel.asm as a number
-	int offset = (int)keyboard_handler;
+	int offset = (unsigned int)keyboard_handler;
 	// Populate the first entry of the IDT
 	IDT[0].offset_lowerbits = offset & 0x0000FFFF; // lower 16 bits
 	IDT[0].selector = KERNEL_CODE_SEGMENT_OFFSET;
@@ -82,6 +82,26 @@ void load_idt() {
 	ioport_out(PIC1_DATA_PORT, 0x1);
 	ioport_out(PIC2_DATA_PORT, 0x1);
 	// Voila! PICs are initialized
+
+	// Mask all interrupts (why? not entirely sure)
+	// 0xff is 16 bits that are all 1.
+	// This masks each of the 16 interrupts for that PIC.
+	ioport_out(PIC1_DATA_PORT, 0xff);
+	ioport_out(PIC2_DATA_PORT, 0xff);
+
+	// Last but not least, we fill out the IDT descriptor
+	// and load it into the IDTR register of the CPU,
+	// which is all we needed to do to make it active.
+	idt_address = (unsigned int) IDT; // get the address of the IDT variable
+	unsigned int idt_ptr[2]; // create an array of two integers that will describe the IDT
+	idt_ptr[0] =		// position 0 is limit, or size, of the IDT, in bytes
+		(sizeof (struct IDT_entry) * IDT_SIZE) // bytes per IDT * total IDTs
+		+ ((idt_address & 0xFFFF) << 16));		// TODO what is this?
+	idt_ptr[1] = 		// position 1 is base, or address of first entry in IDT
+		idt_address >> 16;										// TODO why rshft 16?
+														// the answer to one probably answers the other
+	// Now load this IDT
+	load_idt(idt_ptr);
 }
 
 void handle_keyboard_interrupt() {
