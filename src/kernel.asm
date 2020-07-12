@@ -19,6 +19,7 @@ global load_idt
 global keyboard_handler
 global ioport_in
 global ioport_out
+global breakpoint
 
 extern main			; Defined in kernel.c
 extern handle_keyboard_interrupt
@@ -51,6 +52,7 @@ ioport_out:
 	mov eax, [esp + 8] 	; value to write. 8 bits
 	; Format: out <DST_IO_PORT>, <VALUE_TO_WRITE>
 	out dx, al
+	ret
 
 print_char_with_asm:
 	; OFFSET = (ROW * 80) + COL
