@@ -13,6 +13,9 @@
 #define PIC1_DATA_PORT 0x21
 #define PIC2_COMMAND_PORT 0xA0
 #define PIC2_DATA_PORT 0xA1
+// IO Ports for Keyboard
+#define KEYBOARD_DATA_PORT 0x60
+#define KEYBOARD_STATUS_PORT 0x64
 
 // ----- External functions -----
 extern void print_char_with_asm(char c, int row, int col);
@@ -33,6 +36,7 @@ struct IDT_entry {
 
 // ----- Global variables -----
 struct IDT_entry IDT[IDT_SIZE]; // This is our entire IDT. Room for 256 interrupts
+int cursor_pos = 0;
 
 void init_idt() {
 	// Get the address of the keyboard_handler code in kernel.asm as a number
@@ -119,7 +123,14 @@ void handle_keyboard_interrupt() {
 	// Write end of interrupt (EOI)
 	ioport_out(PIC1_COMMAND_PORT, 0x20);
 
-	print_char_with_asm('K',0,0);
+	unsigned char status = ioport_in(KEYBOARD_STATUS_PORT);
+	// Lowest bit of status will be set if buffer not empty
+	// (thanks mkeykernel)
+	if (status & 0x1) {
+		ioport_in(KEYBOARD_DATA_PORT);
+		print_char_with_asm('m',0,cursor_pos);
+		cursor_pos++;
+	}
 }
 
 void print_message() {
