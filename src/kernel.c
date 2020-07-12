@@ -8,7 +8,11 @@
 // 32-bit Interrupt gate: 0x8E
 // ( P=1, DPL=00b, S=0, type=1110b => type_attr=1000_1110b=0x8E) (thanks osdev.org)
 #define IDT_INTERRUPT_GATE_32BIT 0x8e
-
+// IO Ports for PICs
+#define PIC1_COMMAND_PORT 0x20
+#define PIC1_DATA_PORT 0x21
+#define PIC2_COMMAND_PORT 0xA0
+#define PIC2_DATA_PORT 0xA1
 
 // ----- External functions -----
 extern void print_char_with_asm(char c, int row, int col);
@@ -38,6 +42,46 @@ void load_idt() {
 	IDT[0].zero = 0;
 	IDT[0].type_attr = IDT_INTERRUPT_GATE_32BIT;
 	IDT[0].offset_upperbits = (offset & 0xFFFF0000) >> 16;
+	// Program the PICs - Programmable Interrupt Controllers
+	// Background:
+		// In modern architectures, the PIC is not a separate chip.
+		// It is emulated in the CPU for backwards compatability.
+		// The APIC (Advanced Programmable Interrupt Controller)
+		// is the new version of the PIC that is integrated into the CPU.
+		// Default vector offset for PIC is 8
+		// This maps IRQ0 to interrupt 8, IRQ1 to interrupt 9, etc.
+		// This is a problem. The CPU reserves the first 32 interrupts for
+		// CPU exceptions such as divide by 0, etc.
+		// In programming the PICs, we move this offset to 0x2 (32) so that
+		// we can handle all interrupts coming to the PICs without overlapping
+		// with any CPU exceptions.
+
+	// Send ICWs - Initialization Command Words
+	// PIC1: IO Port 0x20 (command), 0xA0 (data)
+	// PIC2: IO Port 0x21 (command), 0xA1 (data)
+	// ICW1: Initialization command
+	// Send a fixed value of 0x11 to each PIC to tell it to expect ICW2-4
+	// Restart PIC1
+	ioport_out(PIC1_COMMAND_PORT, 0x11);
+	ioport_out(PIC2_COMMAND_PORT, 0x11);
+	// ICW2: Vector Offset (this is what we are fixing)
+	// Start PIC1 at 32 (0x20 in hex) (IRQ0=0x20, ..., IRQ7=0x27)
+	ioport_out(PIC1_DATA_PORT, 0x20);
+	// Start PIC2 right after, at 40 (0x28 in hex)
+	ioport_out(PIC2_DATA_PORT, 0x28);
+	// ICW3: Cascading (how master/slave PICs are wired/daisy chained)
+	// Tell PIC1 there is a slave PIC at IRQ2 (why 4? don't ask me - https://wiki.osdev.org/8259_PIC)
+	ioport_out(PIC1_DATA_PORT, 0x4);
+	// Tell PIC2 "its cascade identity" - again, I'm shaky on this concept. More resources in notes
+	ioport_out(PIC2_DATA_PORT, 0x2);
+	// ICW4: "Gives additional information about the environemnt"
+	// See notes for some potential values
+	// We are using 8086/8088 (MCS-80/85) mode
+	// Not sure if that's relevant, but there it is.
+	// Other modes appear to be special slave/master configurations (see wiki)
+	ioport_out(PIC1_DATA_PORT, 0x1);
+	ioport_out(PIC2_DATA_PORT, 0x1);
+	// Voila! PICs are initialized
 }
 
 void handle_keyboard_interrupt() {
