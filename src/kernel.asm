@@ -6,10 +6,21 @@ section .multiboot
 
 section .text
 
+; Include the GDT from previous tutorials
+; Set this as our GDT with LGDT
+; insetad of relying on what the bootloader sets up for us
+%include "src/inc/gdt.asm"
+
+; Make global anything that is used in main.c
 global start
 global print_char_with_asm
+global load_gdt
 
 extern main			; Defined in kernel.c
+
+load_gdt:
+	lgdt [gdt_descriptor] ; from gdt.asm
+	ret
 
 print_char_with_asm:
 	; OFFSET = (ROW * 80) + COL
