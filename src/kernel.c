@@ -17,6 +17,9 @@
 #define KEYBOARD_DATA_PORT 0x60
 #define KEYBOARD_STATUS_PORT 0x64
 
+// ----- Includes -----
+#include "keyboard_map.h"
+
 // ----- External functions -----
 extern void print_char_with_asm(char c, int row, int col);
 extern void load_gdt();
@@ -118,8 +121,6 @@ void kb_init() {
 }
 
 void handle_keyboard_interrupt() {
-	// unsigned char* mem = 0xb8000;
-	// mem[0] = 'K';
 	// Write end of interrupt (EOI)
 	ioport_out(PIC1_COMMAND_PORT, 0x20);
 
@@ -127,8 +128,9 @@ void handle_keyboard_interrupt() {
 	// Lowest bit of status will be set if buffer not empty
 	// (thanks mkeykernel)
 	if (status & 0x1) {
-		ioport_in(KEYBOARD_DATA_PORT);
-		print_char_with_asm('m',0,cursor_pos);
+		char keycode = ioport_in(KEYBOARD_DATA_PORT);
+		if (keycode < 0) return; // how did they know keycode is signed?
+		print_char_with_asm(keyboard_map[keycode],0,cursor_pos);
 		cursor_pos++;
 	}
 }
