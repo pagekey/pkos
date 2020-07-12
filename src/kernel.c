@@ -129,7 +129,7 @@ void handle_keyboard_interrupt() {
 	// (thanks mkeykernel)
 	if (status & 0x1) {
 		char keycode = ioport_in(KEYBOARD_DATA_PORT);
-		if (keycode < 0) return; // how did they know keycode is signed?
+		if (keycode < 0 || keycode >= 128) return; // how did they know keycode is signed?
 		print_char_with_asm(keyboard_map[keycode],0,cursor_pos);
 		cursor_pos++;
 	}
