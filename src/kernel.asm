@@ -15,6 +15,7 @@ section .text
 global start
 global print_char_with_asm
 global load_gdt
+global load_idt
 global keyboard_handler
 global ioport_in
 global ioport_out
@@ -24,6 +25,12 @@ extern handle_keyboard_interrupt
 
 load_gdt:
 	lgdt [gdt_descriptor] ; from gdt.asm
+	ret
+
+load_idt:
+	mov edx, [esp + 4]
+	lidt [edx]
+	sti			; Turn on interrupts
 	ret
 
 keyboard_handler:

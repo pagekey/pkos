@@ -20,6 +20,7 @@ extern void load_gdt();
 extern void keyboard_handler();
 extern char ioport_in(unsigned short port);
 extern void ioport_out(unsigned short port, unsigned char data);
+extern void load_idt(unsigned int* idt_address);
 
 // ----- Structs -----
 struct IDT_entry {
@@ -33,9 +34,9 @@ struct IDT_entry {
 // ----- Global variables -----
 struct IDT_entry IDT[IDT_SIZE]; // This is our entire IDT. Room for 256 interrupts
 
-void load_idt() {
+void init_idt() {
 	// Get the address of the keyboard_handler code in kernel.asm as a number
-	int offset = (unsigned int)keyboard_handler;
+	unsigned int offset = (unsigned int)keyboard_handler;
 	// Populate the first entry of the IDT
 	IDT[0].offset_lowerbits = offset & 0x0000FFFF; // lower 16 bits
 	IDT[0].selector = KERNEL_CODE_SEGMENT_OFFSET;
@@ -71,9 +72,9 @@ void load_idt() {
 	ioport_out(PIC2_DATA_PORT, 0x28);
 	// ICW3: Cascading (how master/slave PICs are wired/daisy chained)
 	// Tell PIC1 there is a slave PIC at IRQ2 (why 4? don't ask me - https://wiki.osdev.org/8259_PIC)
-	ioport_out(PIC1_DATA_PORT, 0x4);
+	ioport_out(PIC1_DATA_PORT, 0x0);
 	// Tell PIC2 "its cascade identity" - again, I'm shaky on this concept. More resources in notes
-	ioport_out(PIC2_DATA_PORT, 0x2);
+	ioport_out(PIC2_DATA_PORT, 0x0);
 	// ICW4: "Gives additional information about the environemnt"
 	// See notes for some potential values
 	// We are using 8086/8088 (MCS-80/85) mode
@@ -92,11 +93,11 @@ void load_idt() {
 	// Last but not least, we fill out the IDT descriptor
 	// and load it into the IDTR register of the CPU,
 	// which is all we needed to do to make it active.
-	idt_address = (unsigned int) IDT; // get the address of the IDT variable
+	unsigned int idt_address = (unsigned int) IDT; // get the address of the IDT variable
 	unsigned int idt_ptr[2]; // create an array of two integers that will describe the IDT
 	idt_ptr[0] =		// position 0 is limit, or size, of the IDT, in bytes
 		(sizeof (struct IDT_entry) * IDT_SIZE) // bytes per IDT * total IDTs
-		+ ((idt_address & 0xFFFF) << 16));		// TODO what is this?
+		+ ((idt_address & 0xFFFF) << 16);		// TODO what is this?
 	idt_ptr[1] = 		// position 1 is base, or address of first entry in IDT
 		idt_address >> 16;										// TODO why rshft 16?
 														// the answer to one probably answers the other
@@ -104,8 +105,15 @@ void load_idt() {
 	load_idt(idt_ptr);
 }
 
+void kb_init() {
+	// 0xFD = 1111 1101 in binary. enables only IRQ1
+	// Why IRQ1? Remember, IRQ0 exists, it's 0-based
+	ioport_out(PIC1_DATA_PORT, 0xFD);
+}
+
 void handle_keyboard_interrupt() {
-	print_char_with_asm('K',0,0);
+	unsigned char* mem = 0xb8000;
+	mem[0] = 'K';
 }
 
 void print_message() {
@@ -126,7 +134,8 @@ void print_message() {
 
 // ----- Entry point -----
 void main() {
-	load_gdt();
-	load_idt();
 	print_message();
+	load_gdt();
+	init_idt();
+	kb_init();
 }
