@@ -38,11 +38,13 @@ void init_idt() {
 	// Get the address of the keyboard_handler code in kernel.asm as a number
 	unsigned int offset = (unsigned int)keyboard_handler;
 	// Populate the first entry of the IDT
-	IDT[0].offset_lowerbits = offset & 0x0000FFFF; // lower 16 bits
-	IDT[0].selector = KERNEL_CODE_SEGMENT_OFFSET;
-	IDT[0].zero = 0;
-	IDT[0].type_attr = IDT_INTERRUPT_GATE_32BIT;
-	IDT[0].offset_upperbits = (offset & 0xFFFF0000) >> 16;
+	// TODO why 0x21 and not 0x0?
+	// My guess: 0x0 to 0x2 are reserved for CPU, so we use the first avail
+	IDT[0x21].offset_lowerbits = offset & 0x0000FFFF; // lower 16 bits
+	IDT[0x21].selector = KERNEL_CODE_SEGMENT_OFFSET;
+	IDT[0x21].zero = 0;
+	IDT[0x21].type_attr = IDT_INTERRUPT_GATE_32BIT;
+	IDT[0x21].offset_upperbits = (offset & 0xFFFF0000) >> 16;
 	// Program the PICs - Programmable Interrupt Controllers
 	// Background:
 		// In modern architectures, the PIC is not a separate chip.
@@ -67,13 +69,13 @@ void init_idt() {
 	ioport_out(PIC2_COMMAND_PORT, 0x11);
 	// ICW2: Vector Offset (this is what we are fixing)
 	// Start PIC1 at 32 (0x20 in hex) (IRQ0=0x20, ..., IRQ7=0x27)
-	ioport_out(PIC1_DATA_PORT, 0x20);
 	// Start PIC2 right after, at 40 (0x28 in hex)
+	ioport_out(PIC1_DATA_PORT, 0x20);
 	ioport_out(PIC2_DATA_PORT, 0x28);
 	// ICW3: Cascading (how master/slave PICs are wired/daisy chained)
 	// Tell PIC1 there is a slave PIC at IRQ2 (why 4? don't ask me - https://wiki.osdev.org/8259_PIC)
-	ioport_out(PIC1_DATA_PORT, 0x0);
 	// Tell PIC2 "its cascade identity" - again, I'm shaky on this concept. More resources in notes
+	ioport_out(PIC1_DATA_PORT, 0x0);
 	ioport_out(PIC2_DATA_PORT, 0x0);
 	// ICW4: "Gives additional information about the environemnt"
 	// See notes for some potential values
@@ -112,8 +114,12 @@ void kb_init() {
 }
 
 void handle_keyboard_interrupt() {
-	unsigned char* mem = 0xb8000;
-	mem[0] = 'K';
+	// unsigned char* mem = 0xb8000;
+	// mem[0] = 'K';
+	// Write end of interrupt (EOI)
+	ioport_out(PIC1_COMMAND_PORT, 0x20);
+
+	print_char_with_asm('K',0,0);
 }
 
 void print_message() {
@@ -138,4 +144,6 @@ void main() {
 	load_gdt();
 	init_idt();
 	kb_init();
+	// Halt main execution, but don't halt the CPU. Same as `jmp $` in assembly
+	while(1);
 }
