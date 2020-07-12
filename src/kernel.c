@@ -14,6 +14,8 @@
 extern void print_char_with_asm(char c, int row, int col);
 extern void load_gdt();
 extern void keyboard_handler();
+extern char ioport_in(unsigned short port);
+extern void ioport_out(unsigned short port, unsigned char data);
 
 // ----- Structs -----
 struct IDT_entry {
