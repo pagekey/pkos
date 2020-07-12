@@ -15,12 +15,18 @@ section .text
 global start
 global print_char_with_asm
 global load_gdt
+global keyboard_handler
 
 extern main			; Defined in kernel.c
+extern handle_keyboard_interrupt
 
 load_gdt:
 	lgdt [gdt_descriptor] ; from gdt.asm
 	ret
+
+keyboard_handler:
+	call handle_keyboard_interrupt
+	iret
 
 print_char_with_asm:
 	; OFFSET = (ROW * 80) + COL
