@@ -75,6 +75,18 @@ print_char_with_asm:
 	ret
 
 start:
+	; THANK YOU MICHAEL PETCH
+	; https://stackoverflow.com/questions/62885174/multiboot-keyboard-driver-triple-faults-with-grub-works-with-qemu-why
+	lgdt [gdt_descriptor]
+	jmp CODE_SEG:.setcs       ; Set CS to our 32-bit flat code selector
+	.setcs:
+	mov ax, DATA_SEG          ; Setup the segment registers with our flat data selector
+	mov ds, ax
+	mov es, ax
+	mov fs, ax
+	mov gs, ax
+	mov ss, ax
+	mov esp, stack_space        ; set stack pointer
 	cli				; Disable interrupts
 	mov esp, stack_space
 	call main

@@ -154,7 +154,7 @@ void print_message() {
 // ----- Entry point -----
 void main() {
 	print_message();
-	load_gdt();
+	// load_gdt();
 	init_idt();
 	kb_init();
 	enable_interrupts();
