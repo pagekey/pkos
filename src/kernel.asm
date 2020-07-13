@@ -38,8 +38,11 @@ enable_interrupts:
 	ret
 
 keyboard_handler:
+	pushad
+	cld
 	call handle_keyboard_interrupt
-	iret
+	popad
+	iretd
 
 ioport_in:
 	mov edx, [esp + 4] ; PORT_TO_READ, 16 bits
