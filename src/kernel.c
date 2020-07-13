@@ -27,15 +27,20 @@ extern void keyboard_handler();
 extern char ioport_in(unsigned short port);
 extern void ioport_out(unsigned short port, unsigned char data);
 extern void load_idt(unsigned int* idt_address);
+extern void enable_interrupts();
 
 // ----- Structs -----
+struct IDT_pointer {
+	unsigned short limit;
+	unsigned int base;
+} __attribute__((packed));
 struct IDT_entry {
 	unsigned short offset_lowerbits; // 16 bits
 	unsigned short selector; // 16 bits
 	unsigned char zero; // 8 bits
 	unsigned char type_attr; // 8 bits
 	unsigned short offset_upperbits; // 16 bits
-};
+} __attribute__((packed));
 
 // ----- Global variables -----
 struct IDT_entry IDT[IDT_SIZE]; // This is our entire IDT. Room for 256 interrupts
@@ -101,17 +106,12 @@ void init_idt() {
 
 	// Last but not least, we fill out the IDT descriptor
 	// and load it into the IDTR register of the CPU,
-	// which is all we needed to do to make it active.
-	unsigned int idt_address = (unsigned int) IDT; // get the address of the IDT variable
-	unsigned int idt_ptr[2]; // create an array of two integers that will describe the IDT
-	idt_ptr[0] =		// position 0 is limit, or size, of the IDT, in bytes
-		(sizeof (struct IDT_entry) * IDT_SIZE) // bytes per IDT * total IDTs
-		+ ((idt_address & 0xFFFF) << 16);		// TODO what is this?
-	idt_ptr[1] = 		// position 1 is base, or address of first entry in IDT
-		idt_address >> 16;										// TODO why rshft 16?
-														// the answer to one probably answers the other
+	// which is all we need to do to make it active.
+	struct IDT_pointer idt_ptr;
+	idt_ptr.limit = (sizeof(struct IDT_entry) * IDT_SIZE) - 1;
+	idt_ptr.base = (unsigned int) &IDT;
 	// Now load this IDT
-	load_idt(idt_ptr);
+	load_idt(&idt_ptr);
 }
 
 void kb_init() {
@@ -157,6 +157,7 @@ void main() {
 	load_gdt();
 	init_idt();
 	kb_init();
-	// Halt main execution, but don't halt the CPU. Same as `jmp $` in assembly
+	enable_interrupts();
+	// Finish main execution, but don't halt the CPU. Same as `jmp $` in assembly
 	while(1);
 }

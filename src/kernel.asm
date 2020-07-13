@@ -19,7 +19,7 @@ global load_idt
 global keyboard_handler
 global ioport_in
 global ioport_out
-global breakpoint
+global enable_interrupts
 
 extern main			; Defined in kernel.c
 extern handle_keyboard_interrupt
@@ -31,7 +31,10 @@ load_gdt:
 load_idt:
 	mov edx, [esp + 4]
 	lidt [edx]
-	sti			; Turn on interrupts
+	ret
+
+enable_interrupts:
+	sti
 	ret
 
 keyboard_handler:
