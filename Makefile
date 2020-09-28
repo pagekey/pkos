@@ -19,7 +19,7 @@ build_debug: clean
 	ld -m elf_i386 -T ${LINKER} -o ${KERNEL_OUT} build/boot.o build/kernel.o
 run: build
 	qemu-system-i386 -kernel ${KERNEL_OUT} -monitor stdio
-run-iso: iso 
+run-iso: iso
 	qemu-system-i386 -cdrom ${ISO_OUT} -monitor stdio
 debug: build_debug
 	qemu-system-i386 -kernel ${KERNEL_OUT} -s -S &
@@ -30,7 +30,5 @@ iso: build
 	cp ${KERNEL_OUT} build/iso/boot/grub
 	grub-mkrescue -o ${ISO_OUT} build/iso
 	rm -rf build/iso
-run-iso: iso
-	qemu-system-i386 -cdrom ${ISOFILE}
 clean:
 	rm -rf build
