@@ -18,7 +18,9 @@
 #define KEYBOARD_DATA_PORT 0x60
 #define KEYBOARD_STATUS_PORT 0x64
 
-#define PROMPT_LENGTH 2
+#define COMMAND_BUFFER_SIZE 100
+#define PROMPT "pkos> "
+#define PROMPT_LENGTH 6
 
 #define bool int
 #define false 0
@@ -54,7 +56,7 @@ struct IDT_entry IDT[IDT_SIZE]; // This is our entire IDT. Room for 256 interrup
 int cursor_row = 0;
 int cursor_col = 0;
 
-char command_buffer[100];
+char command_buffer[COMMAND_BUFFER_SIZE];
 int command_len = 0;
 
 bool streq(char* string1, int str1len, char* string2, int str2len) {
@@ -185,12 +187,13 @@ void handle_keyboard_interrupt() {
 			} else if (streq(command_buffer, command_len, "clear", 5)) {
 				clear_screen();
 				cursor_row = 0;
+			} else if (command_len < 1) {
+				// do nothing
 			} else {
 				print("Command not found: ", 19);
 				println(command_buffer, command_len);
 			}
 			command_len = 0;
-			cursor_col = 0;
 			print_prompt();
 		} else if (keycode == 14) {
 			// BACKSPACE: Move back one unless on prompt
@@ -198,6 +201,7 @@ void handle_keyboard_interrupt() {
 				print_char_with_asm(' ', cursor_row, --cursor_col);
 			}
 		} else {
+			if (command_len >= COMMAND_BUFFER_SIZE) return;
 			command_buffer[command_len++] = keyboard_map[keycode];
 			printchar(keyboard_map[keycode], cursor_row, cursor_col++);
 			if (cursor_col >= COLS) {
@@ -209,10 +213,9 @@ void handle_keyboard_interrupt() {
 }
 
 void print_prompt() {
-	print_char_with_asm('>', cursor_row, cursor_col);
-	cursor_col++;
-	print_char_with_asm(' ', cursor_row, cursor_col);
-	cursor_col++;
+	cursor_col = 0;
+	print(PROMPT, PROMPT_LENGTH);
+	cursor_col = PROMPT_LENGTH;
 }
 
 void print_message() {
