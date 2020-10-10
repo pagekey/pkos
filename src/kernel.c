@@ -44,7 +44,8 @@ struct IDT_entry {
 
 // ----- Global variables -----
 struct IDT_entry IDT[IDT_SIZE]; // This is our entire IDT. Room for 256 interrupts
-int cursor_pos = 0;
+int cursor_row = 0;
+int cursor_col = 0;
 
 void init_idt() {
 	// Get the address of the keyboard_handler code in kernel.asm as a number
@@ -130,9 +131,33 @@ void handle_keyboard_interrupt() {
 	if (status & 0x1) {
 		char keycode = ioport_in(KEYBOARD_DATA_PORT);
 		if (keycode < 0 || keycode >= 128) return; // how did they know keycode is signed?
-		print_char_with_asm(keyboard_map[keycode],0,cursor_pos);
-		cursor_pos++;
+		if (keycode == 28) {
+			// ENTER : Newline
+			cursor_row++;
+			cursor_col = 0;
+			print_prompt();
+		} else if (keycode == 14) {
+			// BACKSPACE: Move back one unless on prompt
+			if (cursor_col > 2) {
+				cursor_col--;
+				print_char_with_asm(' ', cursor_row, cursor_col);
+			}
+		} else {
+			print_char_with_asm(keyboard_map[keycode], cursor_row, cursor_col);
+			cursor_col++;
+			if (cursor_col >= COLS) {
+				cursor_col = cursor_col % COLS;
+				cursor_row++;
+			}
+		}
 	}
+}
+
+void print_prompt() {
+	print_char_with_asm('>', cursor_row, cursor_col);
+	cursor_col++;
+	print_char_with_asm(' ', cursor_row, cursor_col);
+	cursor_col++;
 }
 
 void print_message() {
@@ -140,7 +165,11 @@ void print_message() {
 	int i, j;
 	for (i = 0; i < COLS; i++) {
 		for (j = 0; j < ROWS; j++) {
-			print_char_with_asm('*',j,i);
+			if (j < 4) {
+				print_char_with_asm('*',j,i);
+			} else {
+				print_char_with_asm(' ',j,i);
+			}
 		}
 	}
 	print_char_with_asm('-',0,0);
@@ -149,11 +178,14 @@ void print_message() {
 	print_char_with_asm('O',0,3);
 	print_char_with_asm('S',0,4);
 	print_char_with_asm('-',0,5);
+
+	cursor_row = 4;
 }
 
 // ----- Entry point -----
 void main() {
 	print_message();
+	print_prompt();
 	// load_gdt();
 	init_idt();
 	kb_init();
