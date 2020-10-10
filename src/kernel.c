@@ -1,6 +1,7 @@
 // ----- Pre-processor constants -----
 #define ROWS 25
 #define COLS 80
+#define VIDMEM 0xb8000
 // IDT_SIZE: Specific to x86 architecture
 #define IDT_SIZE 256
 // KERNEL_CODE_SEGMENT_OFFSET: the first segment after the null segment in gdt.asm
@@ -16,6 +17,8 @@
 // IO Ports for Keyboard
 #define KEYBOARD_DATA_PORT 0x60
 #define KEYBOARD_STATUS_PORT 0x64
+
+#define PROMPT_LENGTH 2
 
 // ----- Includes -----
 #include "keyboard_map.h"
@@ -46,6 +49,28 @@ struct IDT_entry {
 struct IDT_entry IDT[IDT_SIZE]; // This is our entire IDT. Room for 256 interrupts
 int cursor_row = 0;
 int cursor_col = 0;
+
+char command_buffer[100];
+int command_len = 0;
+
+void println(char* string, int len) {
+	print(string, len);
+	cursor_row++;
+}
+
+void print(char* string, int len) {
+	for (int i = 0; i < len; i++) {
+		printchar(string[i], cursor_row, cursor_col);
+		cursor_col++;
+	}
+	cursor_row++;
+}
+
+void printchar(char c, int row, int col) {
+	// OFFSET = (ROW * 80) + COL
+	char* offset = (char*) (VIDMEM + 2*((row * COLS) + col));
+	*offset = c;
+}
 
 void init_idt() {
 	// Get the address of the keyboard_handler code in kernel.asm as a number
@@ -130,21 +155,24 @@ void handle_keyboard_interrupt() {
 	// (thanks mkeykernel)
 	if (status & 0x1) {
 		char keycode = ioport_in(KEYBOARD_DATA_PORT);
-		if (keycode < 0 || keycode >= 128) return; // how did they know keycode is signed?
+		if (keycode < 0 || keycode >= 128) return;
 		if (keycode == 28) {
 			// ENTER : Newline
 			cursor_row++;
 			cursor_col = 0;
+			// Test: print what was entered
+			print(command_buffer, command_len);
+			command_len = 0;
+			cursor_col = 0;
 			print_prompt();
 		} else if (keycode == 14) {
 			// BACKSPACE: Move back one unless on prompt
-			if (cursor_col > 2) {
-				cursor_col--;
-				print_char_with_asm(' ', cursor_row, cursor_col);
+			if (cursor_col > PROMPT_LENGTH) {
+				print_char_with_asm(' ', cursor_row, --cursor_col);
 			}
 		} else {
-			print_char_with_asm(keyboard_map[keycode], cursor_row, cursor_col);
-			cursor_col++;
+			command_buffer[command_len++] = keyboard_map[keycode];
+			printchar(keyboard_map[keycode], cursor_row, cursor_col++);
 			if (cursor_col >= COLS) {
 				cursor_col = cursor_col % COLS;
 				cursor_row++;
