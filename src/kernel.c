@@ -59,6 +59,11 @@ int cursor_col = 0;
 char command_buffer[COMMAND_BUFFER_SIZE];
 int command_len = 0;
 
+void disable_cursor() {
+	ioport_out(0x3D4, 0x0A);
+	ioport_out(0x3D5, 0x20);
+}
+
 bool streq(char* string1, int str1len, char* string2, int str2len) {
 	if (str1len != str2len) return false;
 	for (int i = 0; i < str1len; i++) {
@@ -230,13 +235,7 @@ void print_message() {
 			}
 		}
 	}
-	print_char_with_asm('-',0,0);
-	print_char_with_asm('P',0,1);
-	print_char_with_asm('K',0,2);
-	print_char_with_asm('O',0,3);
-	print_char_with_asm('S',0,4);
-	print_char_with_asm('-',0,5);
-
+	print("-PKOS-", 6);
 	cursor_row = 4;
 }
 
@@ -244,7 +243,7 @@ void print_message() {
 void main() {
 	print_message();
 	print_prompt();
-	// load_gdt();
+	disable_cursor();
 	init_idt();
 	kb_init();
 	enable_interrupts();
