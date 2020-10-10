@@ -63,7 +63,6 @@ void print(char* string, int len) {
 		printchar(string[i], cursor_row, cursor_col);
 		cursor_col++;
 	}
-	cursor_row++;
 }
 
 void printchar(char c, int row, int col) {
@@ -160,8 +159,9 @@ void handle_keyboard_interrupt() {
 			// ENTER : Newline
 			cursor_row++;
 			cursor_col = 0;
-			// Test: print what was entered
-			print(command_buffer, command_len);
+			// Handle command
+			print("Command not found: ", 19);
+			println(command_buffer, command_len);
 			command_len = 0;
 			cursor_col = 0;
 			print_prompt();
