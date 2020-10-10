@@ -20,6 +20,10 @@
 
 #define PROMPT_LENGTH 2
 
+#define bool int
+#define false 0
+#define true 1
+
 // ----- Includes -----
 #include "keyboard_map.h"
 
@@ -52,6 +56,14 @@ int cursor_col = 0;
 
 char command_buffer[100];
 int command_len = 0;
+
+bool streq(char* string1, int str1len, char* string2, int str2len) {
+	if (str1len != str2len) return false;
+	for (int i = 0; i < str1len; i++) {
+		if (string1[i] != string2[i]) return false;
+	}
+	return true;
+}
 
 void println(char* string, int len) {
 	print(string, len);
@@ -160,8 +172,12 @@ void handle_keyboard_interrupt() {
 			cursor_row++;
 			cursor_col = 0;
 			// Handle command
-			print("Command not found: ", 19);
-			println(command_buffer, command_len);
+			if (streq(command_buffer, command_len, "ls", 2)) {
+				println("Filesystem not yet implemented.", 31);
+			} else {
+				print("Command not found: ", 19);
+				println(command_buffer, command_len);
+			}
 			command_len = 0;
 			cursor_col = 0;
 			print_prompt();
