@@ -83,6 +83,14 @@ void printchar(char c, int row, int col) {
 	*offset = c;
 }
 
+void clear_screen() {
+	for (int i = 0; i < ROWS; i++) {
+		for (int j = 0; j < COLS; j++) {
+			printchar(' ', i, j);
+		}
+	}
+}
+
 void init_idt() {
 	// Get the address of the keyboard_handler code in kernel.asm as a number
 	unsigned int offset = (unsigned int)keyboard_handler;
@@ -174,6 +182,9 @@ void handle_keyboard_interrupt() {
 			// Handle command
 			if (streq(command_buffer, command_len, "ls", 2)) {
 				println("Filesystem not yet implemented.", 31);
+			} else if (streq(command_buffer, command_len, "clear", 5)) {
+				clear_screen();
+				cursor_row = 0;
 			} else {
 				print("Command not found: ", 19);
 				println(command_buffer, command_len);
