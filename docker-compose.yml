@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+    pkos_dev:
+        build:
+            context: .
+            dockerfile: ./Dockerfile
+        hostname: pkos_dev
+        image: registry.gitlab.com/pagekeysolutions/pkos/pkos_dev
+        volumes:
+            - .:/pkos
