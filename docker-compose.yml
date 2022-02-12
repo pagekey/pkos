@@ -2,10 +2,11 @@ version: '3'
 
 services:
     pkos_dev:
-        build:
-            context: .
-            dockerfile: ./Dockerfile
+        build: .
+        environment:
+            - DISPLAY
         hostname: pkos_dev
-        image: registry.gitlab.com/pagekeysolutions/pkos/pkos_dev
         volumes:
             - .:/pkos
+        network_mode: 'host' # makes x11 windows work for `make run`
+        entrypoint: ['make', 'run']
