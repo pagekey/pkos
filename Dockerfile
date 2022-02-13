@@ -8,6 +8,7 @@ RUN apt update && apt install -y \
     grub2-common \
     nasm \
     qemu-system-i386 \
+    xorriso \
     && rm -rf /var/lib/apt/lists
 
 WORKDIR /pkos

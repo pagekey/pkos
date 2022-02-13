@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-    pkos_dev:
+    dev:
         build: .
         environment:
             - DISPLAY
