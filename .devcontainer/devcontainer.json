@@ -1,7 +1,0 @@
-{
-    "name": "PKOS",
-    "build": {
-        "dockerfile": "../Dockerfile",
-        "context": ".."
-    }
-}
