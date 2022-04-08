@@ -11,7 +11,8 @@ build: clean
 	mkdir -p build
 	nasm -f elf32 ${BOOT} -o build/boot.o
 	gcc -m32 -ffreestanding -c ${KERNEL} -o build/kernel.o
-	ld -m elf_i386 -T ${LINKER} -o ${KERNEL_OUT} build/boot.o build/kernel.o
+	gcc -m32 -ffreestanding -c src/other.c -o build/other.o
+	ld -m elf_i386 -T ${LINKER} -o ${KERNEL_OUT} build/boot.o build/kernel.o build/other.o
 build_debug: clean
 	mkdir -p build
 	nasm -f elf32 ${BOOT} -o build/boot.o
