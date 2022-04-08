@@ -1,6 +1,7 @@
-#include "keyboard_map.h"
-#include "other.h"
 #include "kernel.h"
+#include "keyboard_map.h"
+#include "../common/stdlib.h"
+#include "../screen/screen.h"
 
 // ----- Global variables -----
 struct IDT_entry IDT[IDT_SIZE]; // This is our entire IDT. Room for 256 interrupts
@@ -13,14 +14,6 @@ int command_len = 0;
 void disable_cursor() {
 	ioport_out(0x3D4, 0x0A);
 	ioport_out(0x3D5, 0x20);
-}
-
-bool streq(char* string1, int str1len, char* string2, int str2len) {
-	if (str1len != str2len) return false;
-	for (int i = 0; i < str1len; i++) {
-		if (string1[i] != string2[i]) return false;
-	}
-	return true;
 }
 
 void println(char* string, int len) {
@@ -52,15 +45,20 @@ void clear_screen() {
 
 void init_idt() {
 	// Get the address of the keyboard_handler code in kernel.asm as a number
-	unsigned int offset = (unsigned int)keyboard_handler;
+	unsigned int kb_handler_offset = (unsigned int)keyboard_handler;
 	// Populate the first entry of the IDT
-	// TODO why 0x21 and not 0x0?
-	// My guess: 0x0 to 0x2 are reserved for CPU, so we use the first avail
-	IDT[0x21].offset_lowerbits = offset & 0x0000FFFF; // lower 16 bits
+
+	// why 0x21 and not 0x0? first 32 interrupts (up to 0x20)
+	// are reserved for the CPU.
+	// These include special interrupts such as divide-by-zero exception.
+
+	// 0x21, or 33 decimal, is the first available interrupt
+	// that we can set to whatever we want.
+	IDT[0x21].offset_lowerbits = kb_handler_offset & 0x0000FFFF; // lower 16 bits
 	IDT[0x21].selector = KERNEL_CODE_SEGMENT_OFFSET;
 	IDT[0x21].zero = 0;
 	IDT[0x21].type_attr = IDT_INTERRUPT_GATE_32BIT;
-	IDT[0x21].offset_upperbits = (offset & 0xFFFF0000) >> 16;
+	IDT[0x21].offset_upperbits = (kb_handler_offset & 0xFFFF0000) >> 16;
 	// Program the PICs - Programmable Interrupt Controllers
 	// Background:
 		// In modern architectures, the PIC is not a separate chip.
@@ -146,7 +144,6 @@ void handle_keyboard_interrupt() {
 				cursor_row = 0;
 			} else if (streq(command_buffer, command_len, "vga", 3)) {
 				println("Not yet implemented", 19);
-				printSpecialMessage();
 			} else if (streq(command_buffer, command_len, "help", 4)) {
 				println("ls: List files", 14);
 				println("clear: Clear screen", 19);

@@ -1,3 +1,6 @@
+#ifndef __KEYBOARD_MAP_H
+#define __KEYBOARD_MAP_H
+
 unsigned char keyboard_map[128] = {
   // -------- 0 to 9 --------
   ' ',
@@ -72,3 +75,5 @@ unsigned char keyboard_map[128] = {
 // 157: Pause|Break (followed by 197?)
 // Clicking on screen appears to send keycodes 70, 198
   // Is this the MARK command or something like that?
+
+#endif

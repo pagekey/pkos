@@ -1,3 +1,8 @@
+#ifndef __KERNEL_H
+#define __KERNEL_H
+
+#include "../common/types.h"
+
 // ----- Pre-processor constants -----
 #define ROWS 25
 #define COLS 80
@@ -22,12 +27,7 @@
 #define PROMPT "pkos> "
 #define PROMPT_LENGTH 6
 
-#define bool int
-#define false 0
-#define true 1
-
 // ----- External functions -----
-extern void print_char_with_asm(char c, int row, int col);
 extern void load_gdt();
 extern void keyboard_handler();
 extern char ioport_in(unsigned short port);
@@ -49,14 +49,9 @@ struct IDT_entry {
 } __attribute__((packed));
 
 void disable_cursor();
-bool streq(char* string1, int str1len, char* string2, int str2len);
-void println(char* string, int len);
-void print(char* string, int len);
-void printchar(char c, int row, int col);
-void clear_screen();
 void init_idt();
 void kb_init();
 void handle_keyboard_interrupt();
-void print_prompt();
-void print_message();
 void main();
+
+#endif

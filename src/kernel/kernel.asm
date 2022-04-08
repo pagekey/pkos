@@ -9,11 +9,10 @@ section .text
 ; Include the GDT from previous tutorials
 ; Set this as our GDT with LGDT
 ; insetad of relying on what the bootloader sets up for us
-%include "src/inc/gdt.asm"
+%include "src/kernel/gdt.asm"
 
-; Make global anything that is used in main.c
+; Make global anything that is used in C files
 global start
-global print_char_with_asm
 global load_gdt
 global load_idt
 global keyboard_handler
@@ -58,20 +57,6 @@ ioport_out:
 	mov eax, [esp + 8] 	; value to write. 8 bits
 	; Format: out <DST_IO_PORT>, <VALUE_TO_WRITE>
 	out dx, al
-	ret
-
-print_char_with_asm:
-	; OFFSET = (ROW * 80) + COL
-	mov eax, [esp + 8] 		; eax = row
-	mov edx, 80						; 80 (number of cols per row)
-	mul edx								; now eax = row * 80
-	add eax, [esp + 12] 	; now eax = row * 80 + col
-	mov edx, 2						; * 2 because 2 bytes per char on screen
-	mul edx
-	mov edx, 0xb8000			; vid mem start in edx
-	add edx, eax					; Add our calculated offset
-	mov eax, [esp + 4] 		; char c
-	mov [edx], al
 	ret
 
 start:

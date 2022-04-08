@@ -1,3 +1,8 @@
+;
+; NOT CURRENTLY USED
+; This is a relic of past tutorial where we rolled our own bootloader
+; PKOS should still compile if you delete the entire boot folder
+;
 bits 16
 [org 0x7c00]
 KERNEL_OFFSET equ 0x1000	; Memory location we will load our kernel to
