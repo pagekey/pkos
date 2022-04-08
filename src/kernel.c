@@ -74,6 +74,7 @@ bool streq(char* string1, int str1len, char* string2, int str2len) {
 
 void println(char* string, int len) {
 	print(string, len);
+	cursor_col = 0;
 	cursor_row++;
 }
 
@@ -192,11 +193,18 @@ void handle_keyboard_interrupt() {
 			} else if (streq(command_buffer, command_len, "clear", 5)) {
 				clear_screen();
 				cursor_row = 0;
+			} else if (streq(command_buffer, command_len, "vga", 3)) {
+				println("Not yet implemented", 19);
+			} else if (streq(command_buffer, command_len, "help", 4)) {
+				println("ls: List files", 14);
+				println("clear: Clear screen", 19);
+				println("vga: Run VGA test", 17);
 			} else if (command_len < 1) {
 				// do nothing
 			} else {
 				print("Command not found: ", 19);
 				println(command_buffer, command_len);
+				println("Write `help` to see commands.", 29);
 			}
 			command_len = 0;
 			print_prompt();
