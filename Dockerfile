@@ -4,6 +4,7 @@ ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt update && apt install -y \
     build-essential \
+    gdb \
     git \
     grub2-common \
     nasm \
