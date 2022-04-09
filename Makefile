@@ -22,7 +22,7 @@ ${KERNEL_OUT}: ${OBJ_FILES} ${BIN_FILES}
 ${ISO_OUT}: ${KERNEL_OUT}
 	mkdir -p build/iso/boot/grub
 	cp grub.cfg build/iso/boot/grub
-	cp $^ build/iso/boot/grub
+	cp $< build/iso/boot/grub
 	grub-mkrescue -o $@ build/iso
 	rm -rf build
 
@@ -39,7 +39,7 @@ debug: ${ISO_OUT}
 
 .PHONY: run
 run: ${KERNEL_OUT}
-	qemu-system-i386 -kernel $^ -monitor stdio
+	qemu-system-i386 -kernel $< -monitor stdio
 
 .PHONY: run-debug
 run-debug: debug
@@ -48,5 +48,5 @@ run-debug: debug
 
 .PHONY: run-iso
 run-iso: ${ISO_OUT}
-	qemu-system-i386 -cdrom $^ -monitor stdio
+	qemu-system-i386 -cdrom $< -monitor stdio
 
