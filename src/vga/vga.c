@@ -5,6 +5,23 @@
 void vga_test() {
     println("Attempting to switch modes...", 29);
     write_regs(g_320x200x256);
+    vga_clear_screen();
+}
+
+void vga_clear_screen() {
+    // Note: "clear_screen" name conflicted with something in screen.h
+    // Now I see why namespacing is a thing
+    for (int i = 0; i < 320; i++) {
+        for (int j = 0; j < 200; j++) {
+            vga_plot_pixel(i,j,0);
+        }
+    }
+}
+
+void vga_plot_pixel(int x, int y, unsigned short color) {
+    unsigned short offset = x + 320 * y;
+    unsigned char *VGA = (unsigned char*) VGA_ADDRESS; // TODO snippet has "far" keyword?? what is that
+    VGA[offset] = color;
 }
 
 // Begin copied code

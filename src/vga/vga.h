@@ -1,5 +1,8 @@
+#define VGA_ADDRESS 0xA0000000L
+
 void vga_test();
-void write_regs(unsigned char *regs);
+void vga_clear_screen();
+void vga_plot_pixel(int x, int y, unsigned short color);
 
 // Begin copied code
 // Source: https://files.osdev.org/mirrors/geezer/osd/graphics/modes.c
@@ -43,4 +46,5 @@ unsigned char g_320x200x256[] =
 	0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
 	0x41, 0x00, 0x0F, 0x00,	0x00
 };
+void write_regs(unsigned char *regs);
 // end copied code
