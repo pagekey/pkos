@@ -2,6 +2,7 @@
 #include "keyboard_map.h"
 #include "../common/stdlib.h"
 #include "../screen/screen.h"
+#include "../vga/vga.h"
 
 // ----- Global variables -----
 struct IDT_entry IDT[IDT_SIZE]; // This is our entire IDT. Room for 256 interrupts
@@ -143,7 +144,7 @@ void handle_keyboard_interrupt() {
 				clear_screen();
 				cursor_row = 0;
 			} else if (streq(command_buffer, command_len, "vga", 3)) {
-				println("Not yet implemented", 19);
+				vga_test();
 			} else if (streq(command_buffer, command_len, "help", 4)) {
 				println("ls: List files", 14);
 				println("clear: Clear screen", 19);

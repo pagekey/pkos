@@ -1,0 +1,1 @@
+void vga_test();

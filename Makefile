@@ -12,6 +12,7 @@ BIN_FILES :=
 include src/common/main.mk
 include src/kernel/main.mk
 include src/screen/main.mk
+include src/vga/main.mk
 
 %.o: %.c
 	${CC} ${CCFLAGS} -c $< -o $@
