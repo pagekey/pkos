@@ -36,14 +36,14 @@ clean:
 
 .PHONY: debug
 debug: CCFLAGS += -ggdb
-debug: ${ISO_OUT}
+debug: ${KERNEL_OUT}
 
 .PHONY: run
 run: ${KERNEL_OUT}
 	qemu-system-i386 -kernel $< -monitor stdio
 
 .PHONY: run-debug
-run-debug: debug
+run-debug: clean debug
 	qemu-system-i386 -kernel ${KERNEL_OUT} -s -S &
 	gdb -x .gdbinit
 
