@@ -31,9 +31,11 @@ void vga_plot_pixel(int x, int y, unsigned short color);
 #define	VGA_NUM_GC_REGS		9
 #define	VGA_NUM_SEQ_REGS	5
 
+extern unsigned char g_8x16_font[4096];
 extern unsigned char g_320x200x256[];
 extern unsigned char g_80x25_text[];
 void write_regs(unsigned char *regs);
+static void write_font(unsigned char *buf, unsigned font_height);
 // end copied code
 
 #endif
