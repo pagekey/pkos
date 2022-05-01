@@ -3,6 +3,7 @@
 
 #define VGA_ADDRESS 0xA0000
 
+void vga_enter_text_mode();
 void vga_test();
 void vga_clear_screen();
 void vga_plot_pixel(int x, int y, unsigned short color);
@@ -31,6 +32,7 @@ void vga_plot_pixel(int x, int y, unsigned short color);
 #define	VGA_NUM_SEQ_REGS	5
 
 extern unsigned char g_320x200x256[];
+extern unsigned char g_80x25_text[];
 void write_regs(unsigned char *regs);
 // end copied code
 

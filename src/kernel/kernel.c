@@ -163,6 +163,9 @@ void handle_keyboard_interrupt() {
 			if (cursor_col > PROMPT_LENGTH) {
 				print_char_with_asm(' ', cursor_row, --cursor_col);
 			}
+		} else if (keycode == 1) {
+			// ESCAPE: switch to text mode
+			vga_enter_text_mode();
 		} else {
 			if (command_len >= COMMAND_BUFFER_SIZE) return;
 			command_buffer[command_len++] = keyboard_map[keycode];
