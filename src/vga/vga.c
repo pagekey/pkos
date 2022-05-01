@@ -2,6 +2,9 @@
 #include "../kernel/kernel.h"
 #include "../screen/screen.h"
 
+#define COLOR_GREEN 0x2
+#define COLOR_PURPLE 0xf
+
 unsigned char g_320x200x256[] =
 {
 /* MISC */
@@ -26,13 +29,15 @@ void vga_test() {
     println("Attempting to switch modes...", 29);
     write_regs(g_320x200x256);
     vga_clear_screen();
+	// draw rectangle
+	draw_rectangle(150, 10, 100, 50);
 	// draw some faces
 	draw_happy_face(10,10);
 	draw_happy_face(100,100);
 	draw_happy_face(300,150);
 	// bounds
 	vga_plot_pixel(0, 0, 15);
-	vga_plot_pixel(319, 199, 0xf);
+	vga_plot_pixel(319, 199, COLOR_PURPLE);
 	// see some colors
 	for (int i = 0; i < 15; i++) {
 		for (int j = 0; j < 100; j++) {
@@ -41,23 +46,31 @@ void vga_test() {
 	}
 }
 
+void draw_rectangle(int x, int y, int width, int height) {
+	for (int i = 0; i < width; i++) {
+		for (int j = 0; j < height; j++) {
+			vga_plot_pixel(x+i, y+j, COLOR_GREEN);
+		}
+	}
+}
+
 void draw_happy_face(int x, int y) {
 	// eye
-	vga_plot_pixel(x,y,0xf);
+	vga_plot_pixel(x,y,COLOR_PURPLE);
 	// eye
-	vga_plot_pixel(x+10,y,0xf);
+	vga_plot_pixel(x+10,y,COLOR_PURPLE);
 	// mouth
-	vga_plot_pixel(x,	y+8,0xf);
-	vga_plot_pixel(x+1,	y+9,0xf);
-	vga_plot_pixel(x+2,	y+10,0xf);
-	vga_plot_pixel(x+3,	y+10,0xf);
-	vga_plot_pixel(x+4,	y+10,0xf);
-	vga_plot_pixel(x+5,	y+10,0xf);
-	vga_plot_pixel(x+6,	y+10,0xf);
-	vga_plot_pixel(x+7,	y+10,0xf);
-	vga_plot_pixel(x+8,	y+10,0xf);
-	vga_plot_pixel(x+9,	y+9,0xf);
-	vga_plot_pixel(x+10,y+8,0xf);
+	vga_plot_pixel(x,	y+8,COLOR_PURPLE);
+	vga_plot_pixel(x+1,	y+9,COLOR_PURPLE);
+	vga_plot_pixel(x+2,	y+10,COLOR_PURPLE);
+	vga_plot_pixel(x+3,	y+10,COLOR_PURPLE);
+	vga_plot_pixel(x+4,	y+10,COLOR_PURPLE);
+	vga_plot_pixel(x+5,	y+10,COLOR_PURPLE);
+	vga_plot_pixel(x+6,	y+10,COLOR_PURPLE);
+	vga_plot_pixel(x+7,	y+10,COLOR_PURPLE);
+	vga_plot_pixel(x+8,	y+10,COLOR_PURPLE);
+	vga_plot_pixel(x+9,	y+9,COLOR_PURPLE);
+	vga_plot_pixel(x+10,y+8,COLOR_PURPLE);
 }
 
 void vga_clear_screen() {
