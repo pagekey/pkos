@@ -2,6 +2,7 @@
 #include "../kernel/kernel.h"
 #include "../screen/screen.h"
 
+#define COLOR_BLACK 0x0
 #define COLOR_GREEN 0x2
 #define COLOR_PURPLE 0xf
 
@@ -78,14 +79,14 @@ void vga_clear_screen() {
     // Now I see why namespacing is a thing
     for (int i = 0; i < 320; i++) {
         for (int j = 0; j < 200; j++) {
-            vga_plot_pixel(i,j,0);
+            vga_plot_pixel(i,j,COLOR_BLACK);
         }
     }
 }
 
 void vga_plot_pixel(int x, int y, unsigned short color) {
     unsigned short offset = x + 320 * y;
-    unsigned char *VGA = (unsigned char*) VGA_ADDRESS; // TODO snippet has "far" keyword?? what is that
+    unsigned char *VGA = (unsigned char*) VGA_ADDRESS;
     VGA[offset] = color;
 }
 
