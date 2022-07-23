@@ -1,0 +1,27 @@
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event' # i hate merge request pipelines
+      when: never
+    - when: always
+
+stages:
+  - build
+  - test
+
+build:
+  image: registry.gitlab.com/pagekeytech/pkos:latest
+  stage: build
+  script:
+    - make all
+  artifacts:
+    paths:
+      - pkos.bin
+      - pkos.iso
+
+test:
+  image: registry.gitlab.com/pagekeytech/pkos:latest
+  stage: test
+  needs:
+    - build
+  script:
+    - pytest

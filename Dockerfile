@@ -11,6 +11,12 @@ RUN apt update && apt install -y \
     nasm \
     qemu-system-i386 \
     xorriso \
+    python3 \
+    python3-pip \
     && rm -rf /var/lib/apt/lists
 
 WORKDIR /pkos
+
+RUN mkdir test
+COPY test/requirements.txt test
+RUN pip install -r test/requirements.txt
