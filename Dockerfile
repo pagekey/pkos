@@ -17,4 +17,6 @@ RUN apt update && apt install -y \
 
 WORKDIR /pkos
 
+RUN mkdir test
+COPY test/requirements.txt test
 RUN pip install -r test/requirements.txt

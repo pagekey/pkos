@@ -19,8 +19,9 @@ build:
       - pkos.iso
 
 test:
+  image: registry.gitlab.com/pagekeytech/pkos:latest
   stage: test
   needs:
     - build
   script:
-    - echo TODO
+    - pytest
