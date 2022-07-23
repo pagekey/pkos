@@ -15,3 +15,18 @@ class QemuDriver:
         self.monitor.send(message.encode())
     def quit(self):
         self.type("q\n")
+
+def parse_screen_memory(filename):
+    with open(filename, 'rb') as screen:
+        screen_bytes = screen.read()
+    screen_bytes_text = bytes([screen_bytes[i] for i in range(0, len(screen_bytes), 2)])
+    screen_bytes_color = bytes([screen_bytes[i] for i in range(1, len(screen_bytes), 2)])
+    screen_text = screen_bytes_text.decode()
+    screen_color = screen_bytes_color.decode()
+    screen_text_array = [
+        screen_text[i*80:i*80+80] for i in range(24)
+    ]
+    screen_color_array = [
+        screen_color[i*80:i*80+80] for i in range(24)
+    ]
+    return screen_text_array, screen_color_array
