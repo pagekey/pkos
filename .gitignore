@@ -2,3 +2,4 @@ build/
 *.o
 *.bin
 *.iso
+__pycache__

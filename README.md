@@ -4,7 +4,7 @@ Welcome to PKOS! This is an operating system written completely from scratch, wo
 
 Check out the accomapnying video/blog article series: https://pagekeytech.com/projects/pkos.
 
-## Quick Help
+## Getting Started
 
 Try these commands to get started in a hurry.
 
@@ -50,3 +50,13 @@ Aside from a ton of StackOverflow answers, the following were super helpful in p
 * [Ralph Brown's BIOS Interrupt List (Download)](http://www.cs.cmu.edu/~ralf/files.html)
 
 More sources are availble on the writeup for each post in [the series](https://pagekeytech.com/projects/pkos).
+
+## Building the Docker Image
+
+The Docker image is built manually and pushed to GitLab. The following steps are used to do that:
+
+```bash
+docker login registry.gitlab.com
+docker-compose build
+docker-compose push
+```
