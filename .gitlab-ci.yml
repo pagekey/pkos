@@ -2,6 +2,7 @@ workflow:
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event' # i hate merge request pipelines
       when: never
+    - when: always
 
 stages:
   - build
