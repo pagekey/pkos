@@ -1,6 +1,7 @@
 workflow:
   rules:
-    - if: '$CI_PIPELINE_SOURCE' != 'merge_request_event' # i hate merge request pipelines
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event' # i hate merge request pipelines
+      when: never
 
 stages:
   - build
@@ -17,5 +18,7 @@ build:
 
 test:
   stage: test
+  needs:
+    - build
   script:
     - echo TODO
