@@ -1,0 +1,16 @@
+stages:
+  - build
+  - test
+
+build:
+  stage: build
+  script:
+    - make all
+  artifacts:
+    paths:
+      - pkos.bin
+      - pkos.iso
+
+test:
+  stage: test
+    - echo TODO

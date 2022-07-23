@@ -3,6 +3,7 @@ version: '3'
 services:
     dev:
         build: .
+        image: registry.gitlab.com:443/pagekeytech/pkos:latest
         environment:
             - DISPLAY
         hostname: pkos_dev
