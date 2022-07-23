@@ -56,7 +56,7 @@ More sources are availble on the writeup for each post in [the series](https://p
 The Docker image is built manually and pushed to GitLab. The following steps are used to do that:
 
 ```bash
-docker login registry.gitlab.com:443
+docker login registry.gitlab.com
 docker-compose build
 docker-compose push
 ```
