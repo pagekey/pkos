@@ -3,6 +3,9 @@ import socket
 import subprocess
 import time
 
+SCREEN_WIDTH = 80
+SCREEN_HEIGHT = 24
+
 class QemuDriver:
     def __init__(self):
         self.monitor = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
@@ -13,6 +16,9 @@ class QemuDriver:
         self.monitor.connect("qemu-monitor-socket")
     def type(self, message):
         self.monitor.send(message.encode())
+    def dump_screen(self, filename):
+        screensize = 2 * SCREEN_WIDTH * SCREEN_HEIGHT
+        self.type(f"memsave 0xb8000 {screensize} {filename}\n")
     def quit(self):
         self.type("q\n")
 
@@ -24,9 +30,9 @@ def parse_screen_memory(filename):
     screen_text = screen_bytes_text.decode()
     screen_color = screen_bytes_color.decode()
     screen_text_array = [
-        screen_text[i*80:i*80+80] for i in range(24)
+        screen_text[i*SCREEN_WIDTH:(i+1)*SCREEN_WIDTH] for i in range(SCREEN_HEIGHT)
     ]
     screen_color_array = [
-        screen_color[i*80:i*80+80] for i in range(24)
+        screen_color[i*SCREEN_WIDTH:(i+1)*SCREEN_WIDTH] for i in range(SCREEN_HEIGHT)
     ]
     return screen_text_array, screen_color_array
