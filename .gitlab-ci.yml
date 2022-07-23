@@ -17,4 +17,5 @@ build:
 
 test:
   stage: test
+  script:
     - echo TODO
