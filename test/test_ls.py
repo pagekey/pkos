@@ -1,34 +1,24 @@
 import os
 import re
+import socket
 import subprocess
 import time
 
-def strip_ansi_escape(text):
-    ansi_escape = re.compile(r'\x1B\[[0-?]*[ -/]*[@-~]')
-    subbed = ansi_escape.sub('', text)
-    return subbed
-
 def test_ls():
     if os.path.exists('screen.bin'): os.remove('screen.bin')
-    process = subprocess.Popen('qemu-system-i386 -monitor stdio -kernel pkos.bin'.split(), stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    process = subprocess.Popen('qemu-system-i386 -nographic -monitor unix:qemu-monitor-socket,server,nowait -kernel pkos.bin'.split(), stdin=subprocess.PIPE, stdout=subprocess.PIPE)
     time.sleep(1) # boot up
-    process.stdin.write("sendkey l\n".encode())
-    process.stdin.write("sendkey s\n".encode())
-    process.stdin.write("sendkey kp_enter\n".encode())
-    process.stdin.flush()
+    monitor = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    monitor.connect("qemu-monitor-socket")
+    monitor.send("sendkey l\n".encode())
+    monitor.send("sendkey s\n".encode())
+    monitor.send("sendkey kp_enter\n".encode())
     time.sleep(1) # allow vid memory to catch up
     screensize = 2 * 80 * 24
-    process.stdin.write(f"memsave 0xb8000 {screensize} screen.bin\n".encode())
-    process.stdin.write("q\n".encode())
-    process.stdin.flush()
+    monitor.send(f"memsave 0xb8000 {screensize} screen.bin\n".encode())
+    monitor.send("q\n".encode())
 
-    # One approach: Try to parse through the terminal output (and have to deal with ANSI escape chars, etc.)
-    # output_bytes, _ = process.communicate()
-    # output = output_bytes.decode()
-    # lines = [strip_ansi_escape(l) for l in output.split('\r\n')]
-    # lines = [l for l in lines if not l.startswith('(qemu)') and not l.startswith('QEMU 4.2.1 monitor')]
-
-    # Another approach: simply parse the dumped screen memory!
+    # Parse the dumped screen memory
     time.sleep(1) # wait for it to make screen.bin
     with open('screen.bin', 'rb') as screen:
         screen_bytes = screen.read()
