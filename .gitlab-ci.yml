@@ -9,7 +9,7 @@ stages:
   - test
 
 build:
-  image: registry.gitlab.com/pagekey/pkos
+  image: registry.gitlab.com/pagekeytech/pkos:latest
   stage: build
   script:
     - make all
