@@ -3,3 +3,4 @@ build/
 *.bin
 *.iso
 __pycache__
+a.out
