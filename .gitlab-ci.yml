@@ -18,10 +18,19 @@ build:
       - pkos.bin
       - pkos.iso
 
-test:
+test_integration:
   image: registry.gitlab.com/pagekeytech/pkos:latest
   stage: test
   needs:
     - build
   script:
     - pytest
+
+test_unit:
+  image: registry.gitlab.com/pagekeytech/pkos:latest
+  stage: test
+  needs:
+    - build
+  script:
+    - g++ test/unit/suite.cpp -lgtest -lgtest_main -pthread
+    - ./a.out
