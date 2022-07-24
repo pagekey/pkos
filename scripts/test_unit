@@ -4,8 +4,12 @@ mkdir -p build
 cd build
 g++ ../test/unit/*.cpp -lgtest -lgtest_main -pthread -fprofile-arcs -ftest-coverage
 ./a.out
+RETVAL=$?
+if [ "$retval" -ne "0" ]; then
+    exit 1
+fi
 gcov ../test/unit/*.cpp
 lcov -b . -d . -c --output-file coverage.info
 lcov -r coverage.info '/usr/include/*' --output-file coverage.info
-genhtml coverage.info --output-directory ../../public/
+genhtml coverage.info --output-directory ../public/
 cd ..
