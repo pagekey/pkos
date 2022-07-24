@@ -14,6 +14,6 @@ if [ -n "$NOCOV" ]; then
 fi
 gcov ../test/unit/*.cpp src/common/*.cpp
 lcov -b . -d . -c --output-file coverage.info
-lcov -r coverage.info '/usr/include/*' '/pkos/test/*' --output-file coverage.info
+lcov -r coverage.info '/usr/include/*' '/pkos/test/*' 'test/*' --output-file coverage.info
 genhtml coverage.info --output-directory ../public/
 cd ..
