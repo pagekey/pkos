@@ -1,10 +1,11 @@
 #!/bin/bash
 
-cd test/unit
-g++ suite.cpp -lgtest -lgtest_main -pthread -fprofile-arcs -ftest-coverage
+mkdir -p build
+cd build
+g++ ../test/unit/*.cpp -lgtest -lgtest_main -pthread -fprofile-arcs -ftest-coverage
 ./a.out
-gcov suite.cpp
+gcov ../test/unit/*.cpp
 lcov -b . -d . -c --output-file coverage.info
 lcov -r coverage.info '/usr/include/*' --output-file coverage.info
 genhtml coverage.info --output-directory ../../public/
-cd ../..
+cd ..
