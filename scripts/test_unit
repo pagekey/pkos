@@ -1,14 +1,16 @@
 #!/bin/bash
 
+set -e # exit when any command fails
+
 mkdir -p build
 cd build
-g++ ../test/unit/*.cpp -lgtest -lgtest_main -pthread -fprofile-arcs -ftest-coverage
-if ! ./a.out; then
-    echo One or more tests failed.
-    exit 1
+g++ ../src/common/*.c ../test/unit/*.cpp -lgtest -lgtest_main -pthread -fprofile-arcs -ftest-coverage
+./a.out
+if [ -n "$NOCOV" ]; then
+    exit 0
 fi
-gcov ../test/unit/*.cpp
-lcov -b . -d . -c --output-file coverage.info
+gcov ../test/unit/*.cpp src/common/*.cpp
+lcov -b . -d . -c --output-file coverage.info > /dev/null
 lcov -r coverage.info '/usr/include/*' --output-file coverage.info
 genhtml coverage.info --output-directory ../public/
 cd ..
