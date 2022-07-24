@@ -2,7 +2,8 @@
 
 set -e # exit when any command fails
 
-mkdir -p build
+rm -rf build
+mkdir build
 cd build
 g++ ../test/unit/*.cpp \
     ../src/common/*.c \
