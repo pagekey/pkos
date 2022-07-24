@@ -1,0 +1,20 @@
+#!/bin/bash
+
+set -e # exit when any command fails
+
+rm -rf build
+mkdir build
+cd build
+g++ ../test/unit/*.cpp \
+    ../src/common/*.c \
+    -lgtest -lgtest_main -pthread -fprofile-arcs -ftest-coverage
+    # ../src/vga/*.c \ # fails out
+./a.out
+if [ -n "$NOCOV" ]; then
+    exit 0
+fi
+gcov ../test/unit/*.cpp src/common/*.cpp
+lcov -b . -d . -c --output-file coverage.info
+lcov -r coverage.info '/usr/include/*' '*/test/unit/*.cpp' --output-file coverage.info
+genhtml coverage.info --output-directory ../public/
+cd ..

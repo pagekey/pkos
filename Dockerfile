@@ -8,6 +8,8 @@ RUN apt update && apt install -y \
     git \
     grub2-common \
     grub-pc-bin \
+    lcov \
+    libgtest-dev \
     nasm \
     qemu-system-i386 \
     xorriso \
@@ -17,6 +19,5 @@ RUN apt update && apt install -y \
 
 WORKDIR /pkos
 
-RUN mkdir test
-COPY test/requirements.txt test
-RUN pip install -r test/requirements.txt
+COPY requirements.txt .
+RUN pip install -r requirements.txt
