@@ -10,7 +10,7 @@ if [ -n "$NOCOV" ]; then
     exit 0
 fi
 gcov ../test/unit/*.cpp src/common/*.cpp
-lcov -b . -d . -c --output-file coverage.info > /dev/null
-lcov -r coverage.info '/usr/include/*' --output-file coverage.info
+lcov -b . -d . -c --output-file coverage.info
+lcov -r coverage.info '/usr/include/*' '/pkos/test/*' --output-file coverage.info
 genhtml coverage.info --output-directory ../public/
 cd ..
