@@ -3,9 +3,8 @@
 mkdir -p build
 cd build
 g++ ../test/unit/*.cpp -lgtest -lgtest_main -pthread -fprofile-arcs -ftest-coverage
-./a.out
-RETVAL=$?
-if [ "$retval" -ne "0" ]; then
+if ! ./a.out; then
+    echo One or more tests failed.
     exit 1
 fi
 gcov ../test/unit/*.cpp
