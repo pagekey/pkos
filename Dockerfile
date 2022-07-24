@@ -8,6 +8,7 @@ RUN apt update && apt install -y \
     git \
     grub2-common \
     grub-pc-bin \
+    lcov \
     libgtest-dev \
     nasm \
     qemu-system-i386 \

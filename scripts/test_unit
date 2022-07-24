@@ -1,0 +1,9 @@
+#!/bin/bash
+
+cd test/unit
+g++ suite.cpp -lgtest -lgtest_main -pthread -fprofile-arcs -ftest-coverage
+./a.out
+# gcov suite.cpp
+lcov -b . -d . -c --output-file coverage.info
+genhtml coverage.info --output-directory ../../public/
+cd ../..

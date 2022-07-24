@@ -2,5 +2,15 @@ build/
 *.o
 *.bin
 *.iso
+
 __pycache__
+
+.vscode
+
 a.out
+*.gcov
+*.gcda
+*.gcno
+coverage.info
+
+public/

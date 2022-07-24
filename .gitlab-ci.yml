@@ -32,5 +32,7 @@ test_unit:
   needs:
     - build
   script:
-    - g++ test/unit/suite.cpp -lgtest -lgtest_main -pthread
-    - ./a.out
+    - ./scripts/test_unit
+  artifacts:
+    paths:
+      - public/
