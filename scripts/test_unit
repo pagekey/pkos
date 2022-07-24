@@ -4,7 +4,10 @@ set -e # exit when any command fails
 
 mkdir -p build
 cd build
-g++ ../src/common/*.c ../test/unit/*.cpp -lgtest -lgtest_main -pthread -fprofile-arcs -ftest-coverage
+g++ ../test/unit/*.cpp \
+    ../src/common/*.c \
+    -lgtest -lgtest_main -pthread -fprofile-arcs -ftest-coverage
+    # ../src/vga/*.c \ # fails out
 ./a.out
 if [ -n "$NOCOV" ]; then
     exit 0
