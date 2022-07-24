@@ -1,6 +1,6 @@
 # pkos - PageKey Operating System
 
-Welcome to PKOS! This is an operating system written completely from scratch, working its way up from assembly to higher level languages like C. This was created for educational purposes and documented in the OS Series from PageKey Solutions
+Welcome to PKOS! This is an operating system written completely from scratch, working its way up from assembly to higher level languages like C. This was created for educational purposes and documented in the OS Series from PageKey Tech
 
 Check out the accomapnying video/blog article series: https://pagekeytech.com/projects/pkos.
 
@@ -34,7 +34,7 @@ This repository will hold all versions of PKOS, from the simplest to the latest.
 Use the "Release Tag" listed below for the video you would like to run the code for. Replace `TAG` with the actual Release Tag in what's below:
 
 ```bash
-git clone https://github.com/stephengrice/pkos
+git clone https://gitlab.com/pagekeytech/pkos
 cd pkos
 git checkout TAG
 make
@@ -60,3 +60,12 @@ docker login registry.gitlab.com
 docker-compose build
 docker-compose push
 ```
+
+## Running Tests
+
+- Integration tests:
+  - `pip install -r requirements.txt`
+  - `pytest`
+- Unit tests:
+  - `./scripts/test_unit`
+  - Use `NOCOV=1 ./scripts/test_unit` to skip coverage
