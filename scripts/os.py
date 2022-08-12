@@ -82,6 +82,8 @@ def print_usage():
 
 # TODO add debug build
 # TODO add unit test build to this system
+# TODO add clean command
+# TODO maybe remove docker_run, docker_run_debug, allow any command in docker_shell
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:

@@ -12,7 +12,7 @@ build:
   image: registry.gitlab.com/pagekeytech/pkos:latest
   stage: build
   script:
-    - make all
+    - scripts/os.py build
   artifacts:
     paths:
       - pkos.bin
@@ -24,7 +24,7 @@ test_integration:
   needs:
     - build
   script:
-    - pytest
+    - pytest test/integration
 
 test_unit:
   image: registry.gitlab.com/pagekeytech/pkos:latest
