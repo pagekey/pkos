@@ -3,9 +3,11 @@
 import glob
 import os
 import subprocess
+import sys
 
 COLOR_RED_BOLD = '\033[31;1m'
 COLOR_YELLOW_BOLD = '\033[33;1m'
+COLOR_GREEN_BOLD = '\033[32;1m'
 COLOR_CYAN_BOLD = '\033[36;1m'
 COLOR_RESET = '\033[0m'
 
@@ -30,7 +32,7 @@ def pretty_call(command, color=COLOR_RESET):
     print(color + command + COLOR_RESET)
     subprocess.check_call(command.split())
 
-if __name__ == "__main__":
+def build():
     # Assemble assembly code
     for file_in, file_out in zip(ASM_FILES, BIN_FILES):
         rendered_command = ASSEMBLE_COMMAND % (file_in, file_out)
@@ -58,4 +60,19 @@ if __name__ == "__main__":
     pretty_call('grub-mkrescue -o %s build/iso' % ISO_OUT, COLOR_CYAN_BOLD)
     pretty_call('rm -rf build', COLOR_CYAN_BOLD)
 	
+    print("%sBuilt %s %s" % (COLOR_GREEN_BOLD, KERNEL_OUT, COLOR_RED_BOLD))
+    print("%sBuilt %s %s" % (COLOR_GREEN_BOLD, ISO_OUT, COLOR_RESET))
     print("Done!")
+
+def print_usage():
+    print("Usage: %s build" % sys.argv[0])
+    sys.exit(1)
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print_usage()
+    elif sys.argv[1] == 'build':
+        build()
+    else:
+        print("Command not recognized: %s" % sys.argv[1])
+        print_usage()
