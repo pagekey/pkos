@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from curses import COLOR_CYAN
+from curses import COLOR_CYAN, COLOR_GREEN
 import glob
 import os
 import subprocess
@@ -21,6 +21,7 @@ REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC_DIR = os.path.join(REPO_ROOT, 'src')
 TEST_DIR = os.path.join(REPO_ROOT, 'test')
 BUILD_DIR = os.path.join(REPO_ROOT, 'build')
+DIST_DIR = os.path.join(REPO_ROOT, 'dist')
 LINKER_SCRIPT = os.path.join(REPO_ROOT, 'src', 'linker.ld')
 
 ASM_FILES = glob.glob(os.path.join(SRC_DIR, '*', '*.asm'), recursive=True)
@@ -30,17 +31,20 @@ UNIT_TEST_FILES = glob.glob(os.path.join(TEST_DIR, 'unit', '*.cpp'), recursive=T
 BIN_FILES = [f.replace('.asm', '.bin') for f in ASM_FILES]
 O_FILES = [f.replace('.c', '.o') for f in SOURCE_FILES]
 
-KERNEL_OUT = os.path.join(REPO_ROOT, 'pkos.bin')
-ISO_OUT = os.path.join(REPO_ROOT, 'pkos.iso')
+KERNEL_OUT = os.path.join(DIST_DIR, 'pkos.bin')
+ISO_OUT = os.path.join(DIST_DIR, 'pkos.iso')
 
-def pretty_print(message, color=COLOR_RESET):
+def pretty_print(message, color=COLOR_GREEN_BOLD):
     print(color + message + COLOR_RESET)
 
-def pretty_call(command, color=COLOR_RESET):
-    pretty_print(command)
-    subprocess.check_call(command.split())
+def pretty_call(command, color=COLOR_GREEN_BOLD, shell=False):
+    pretty_print(command, color)
+    subprocess.check_call(command.split(), shell=shell)
 
 def build():
+    os.makedirs('build', exist_ok=True)
+    os.makedirs('dist', exist_ok=True)
+    os.makedirs('public', exist_ok=True)
     # Assemble assembly code
     for file_in, file_out in zip(ASM_FILES, BIN_FILES):
         rendered_command = ASSEMBLE_COMMAND % (file_in, file_out)
@@ -67,8 +71,8 @@ def build():
     pretty_call('grub-mkrescue -o %s build/iso' % ISO_OUT, COLOR_CYAN_BOLD)
     pretty_call('rm -rf build', COLOR_CYAN_BOLD)
 	
-    pretty_print('Built %s' % KERNEL_OUT, COLOR_GREEN_BOLD)
-    pretty_print('Built %s' % ISO_OUT, COLOR_GREEN_BOLD)
+    pretty_print('Built %s' % KERNEL_OUT)
+    pretty_print('Built %s' % ISO_OUT)
     print("Done!")
 
 def test():
@@ -77,42 +81,31 @@ def test():
     test_integration()
 
 def test_unit():
-    pretty_call('rm -rf build', COLOR_GREEN_BOLD)
-    pretty_call('mkdir build', COLOR_GREEN_BOLD)
+    pretty_call('rm -rf build')
+    pretty_call('mkdir build')
     os.chdir(BUILD_DIR)
     pretty_call(
         COMPILE_TEST_COMMAND % (
             ' '.join(UNIT_TEST_FILES), 
             ' '.join(glob.glob(os.path.join(SRC_DIR, 'common', '*.c'))), # temporary workaround
             # ' '.join(SOURCE_FILES), # TODO get unit tests working with all source files
-        ), 
-        COLOR_GREEN_BOLD
+        )
     )
+    pretty_call('./a.out')
+    pretty_call('gcov ../test/unit/*.cpp src/common/*.cpp')
+    pretty_call('lcov -b . -d . -c --output-file coverage.info')
+    # not sure why this lcov cmd doesn't work with subprocess:
+    pretty_print("lcov -r coverage.info '/usr/include/*' '*/test/unit/*.cpp' --output-file coverage.info")
+    os.system("lcov -r coverage.info '/usr/include/*' '*/test/unit/*.cpp' --output-file coverage.info")
+    pretty_call('genhtml coverage.info --output-directory ../public/')
     os.chdir(REPO_ROOT)
-    # rm -rf build
-    # 
-    # 
-    # g++ ../test/unit/*.cpp \
-    #     ../src/common/*.c \
-    #     -lgtest -lgtest_main -pthread -fprofile-arcs -ftest-coverage
-    #     # ../src/vga/*.c \ # fails out
-    # ./a.out
-    # if [ -n "$NOCOV" ]; then
-    #     exit 0
-    # fi
-    # gcov ../test/unit/*.cpp src/common/*.cpp
-    # lcov -b . -d . -c --output-file coverage.info
-    # lcov -r coverage.info '/usr/include/*' '*/test/unit/*.cpp' --output-file coverage.info
-    # genhtml coverage.info --output-directory ../public/
-    # cd ..
-
 
 def test_integration():
-    pretty_call('pytest %s' % os.path.join(REPO_ROOT, 'test', 'integration'), COLOR_GREEN_BOLD)
+    pretty_call('pytest %s' % os.path.join(REPO_ROOT, 'test', 'integration'))
 
 def run():
     build()
-    pretty_call('qemu-system-i386 -kernel %s -monitor stdio' % KERNEL_OUT, COLOR_GREEN_BOLD)
+    pretty_call('qemu-system-i386 -kernel %s -monitor stdio' % KERNEL_OUT)
 
 def print_usage():
     print("Usage: %s [build,test,run]" % sys.argv[0])
