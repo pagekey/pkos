@@ -14,14 +14,18 @@ COLOR_RESET = '\033[0m'
 
 ASSEMBLE_COMMAND = "nasm -f elf32 %s -o %s"
 COMPILE_COMMAND = "gcc -m32 -ffreestanding -c %s -o %s"
+COMPILE_TEST_COMMAND = "g++ %s %s -lgtest -lgtest_main -pthread -fprofile-arcs -ftest-coverage"
 LINK_COMMAND = "ld -m elf_i386 -T %s -o %s %s %s"
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC_DIR = os.path.join(REPO_ROOT, 'src')
+TEST_DIR = os.path.join(REPO_ROOT, 'test')
+BUILD_DIR = os.path.join(REPO_ROOT, 'build')
 LINKER_SCRIPT = os.path.join(REPO_ROOT, 'src', 'linker.ld')
 
 ASM_FILES = glob.glob(os.path.join(SRC_DIR, '*', '*.asm'), recursive=True)
 SOURCE_FILES = glob.glob(os.path.join(SRC_DIR, '*', '*.c'), recursive=True)
+UNIT_TEST_FILES = glob.glob(os.path.join(TEST_DIR, 'unit', '*.cpp'), recursive=True)
 
 BIN_FILES = [f.replace('.asm', '.bin') for f in ASM_FILES]
 O_FILES = [f.replace('.c', '.o') for f in SOURCE_FILES]
@@ -69,7 +73,41 @@ def build():
 
 def test():
     build()
-    pretty_call(os.path.join(REPO_ROOT, 'scripts', 'test_unit'), COLOR_GREEN_BOLD)
+    test_unit()
+    test_integration()
+
+def test_unit():
+    pretty_call('rm -rf build', COLOR_GREEN_BOLD)
+    pretty_call('mkdir build', COLOR_GREEN_BOLD)
+    os.chdir(BUILD_DIR)
+    pretty_call(
+        COMPILE_TEST_COMMAND % (
+            ' '.join(UNIT_TEST_FILES), 
+            ' '.join(glob.glob(os.path.join(SRC_DIR, 'common', '*.c'))), # temporary workaround
+            # ' '.join(SOURCE_FILES), # TODO get unit tests working with all source files
+        ), 
+        COLOR_GREEN_BOLD
+    )
+    os.chdir(REPO_ROOT)
+    # rm -rf build
+    # 
+    # 
+    # g++ ../test/unit/*.cpp \
+    #     ../src/common/*.c \
+    #     -lgtest -lgtest_main -pthread -fprofile-arcs -ftest-coverage
+    #     # ../src/vga/*.c \ # fails out
+    # ./a.out
+    # if [ -n "$NOCOV" ]; then
+    #     exit 0
+    # fi
+    # gcov ../test/unit/*.cpp src/common/*.cpp
+    # lcov -b . -d . -c --output-file coverage.info
+    # lcov -r coverage.info '/usr/include/*' '*/test/unit/*.cpp' --output-file coverage.info
+    # genhtml coverage.info --output-directory ../public/
+    # cd ..
+
+
+def test_integration():
     pretty_call('pytest %s' % os.path.join(REPO_ROOT, 'test', 'integration'), COLOR_GREEN_BOLD)
 
 def run():
