@@ -15,24 +15,15 @@ build:
     - scripts/os.py build
   artifacts:
     paths:
-      - pkos.bin
-      - pkos.iso
+      - dist/*
 
-test_integration:
+test:
   image: registry.gitlab.com/pagekeytech/pkos:latest
   stage: test
   needs:
     - build
   script:
-    - pytest test/integration
-
-test_unit:
-  image: registry.gitlab.com/pagekeytech/pkos:latest
-  stage: test
-  needs:
-    - build
-  script:
-    - ./scripts/test_unit
+    - ./scripts/os.py test
   artifacts:
     paths:
       - public/
