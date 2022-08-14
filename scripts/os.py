@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-from curses import COLOR_CYAN, COLOR_GREEN
 import glob
 import os
 import subprocess

@@ -4,9 +4,6 @@
 #include "../common/types.h"
 
 // ----- Pre-processor constants -----
-#define ROWS 25
-#define COLS 80
-#define VIDMEM 0xb8000
 // IDT_SIZE: Specific to x86 architecture
 #define IDT_SIZE 256
 // KERNEL_CODE_SEGMENT_OFFSET: the first segment after the null segment in gdt.asm
@@ -24,8 +21,6 @@
 #define KEYBOARD_STATUS_PORT 0x64
 
 #define COMMAND_BUFFER_SIZE 100
-#define PROMPT "pkos> "
-#define PROMPT_LENGTH 6
 
 // ----- Structs -----
 struct IDT_pointer {
