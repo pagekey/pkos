@@ -107,14 +107,17 @@ def run():
     build()
     pretty_call('qemu-system-i386 -kernel %s -monitor stdio' % KERNEL_OUT)
 
-def print_usage():
-    print("Usage: %s [build,test,run]" % sys.argv[0])
-    sys.exit(1)
+def run_debug():
+    build()
+    os.system(f'qemu-system-i386 -kernel {KERNEL_OUT} -s -S &')
+    os.system('gdb -x .gdbinit')
 
-# TODO add debug build
-# TODO add unit test build to this system
-# TODO add clean command
-# TODO maybe remove docker_run, docker_run_debug, allow any command in docker_shell
+def clean():
+    pretty_call('rm -rf build dist public')
+
+def print_usage():
+    print("Usage: %s [build,test,run,run_debug,clean]" % sys.argv[0])
+    sys.exit(1)
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
@@ -125,6 +128,10 @@ if __name__ == "__main__":
         test()
     elif sys.argv[1] == 'run':
         run()
+    elif sys.argv[1] == 'run_debug':
+        run_debug()
+    elif sys.argv[1] == 'clean':
+        clean()
     else:
         print("Command not recognized: %s" % sys.argv[1])
         print_usage()
