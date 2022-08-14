@@ -27,14 +27,6 @@
 #define PROMPT "pkos> "
 #define PROMPT_LENGTH 6
 
-// ----- External functions -----
-extern void load_gdt();
-extern void keyboard_handler();
-extern char ioport_in(unsigned short port);
-extern void ioport_out(unsigned short port, unsigned char data);
-extern void load_idt(unsigned int* idt_address);
-extern void enable_interrupts();
-
 // ----- Structs -----
 struct IDT_pointer {
 	unsigned short limit;
@@ -48,10 +40,19 @@ struct IDT_entry {
 	unsigned short offset_upperbits; // 16 bits
 } __attribute__((packed));
 
+// ----- External functions -----
+extern void load_gdt();
+extern void keyboard_handler();
+extern char ioport_in(unsigned short port);
+extern void ioport_out(unsigned short port, unsigned char data);
+extern void load_idt(struct IDT_pointer* idt_address);
+extern void enable_interrupts();
+
+
 void disable_cursor();
 void init_idt();
 void kb_init();
 void handle_keyboard_interrupt();
-void main();
+int main();
 
 #endif

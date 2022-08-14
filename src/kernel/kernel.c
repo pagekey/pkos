@@ -46,7 +46,7 @@ void clear_screen() {
 
 void init_idt() {
 	// Get the address of the keyboard_handler code in kernel.asm as a number
-	unsigned int kb_handler_offset = (unsigned int)keyboard_handler;
+	unsigned int kb_handler_offset = (unsigned long)keyboard_handler;
 	// Populate the first entry of the IDT
 
 	// why 0x21 and not 0x0? first 32 interrupts (up to 0x20)
@@ -112,7 +112,7 @@ void init_idt() {
 	// which is all we need to do to make it active.
 	struct IDT_pointer idt_ptr;
 	idt_ptr.limit = (sizeof(struct IDT_entry) * IDT_SIZE) - 1;
-	idt_ptr.base = (unsigned int) &IDT;
+	idt_ptr.base = (unsigned long) &IDT;
 	// Now load this IDT
 	load_idt(&idt_ptr);
 }
@@ -198,7 +198,7 @@ void print_message() {
 }
 
 // ----- Entry point -----
-void main() {
+int main() {
 	print_message();
 	print_prompt();
 	disable_cursor();

@@ -13,8 +13,8 @@ COLOR_CYAN_BOLD = '\033[36;1m'
 COLOR_RESET = '\033[0m'
 
 ASSEMBLE_COMMAND = "nasm -f elf32 %s -o %s"
-COMPILE_COMMAND = "gcc -m32 -ffreestanding -c %s -o %s"
-COMPILE_TEST_COMMAND = "g++ %s %s -lgtest -lgtest_main -pthread -fprofile-arcs -ftest-coverage"
+COMPILE_COMMAND = "gcc -m32 -ffreestanding -fpermissive -c %s -o %s"
+COMPILE_TEST_COMMAND = "g++ %s %s -m32 -lgtest -lgtest_main -pthread -fprofile-arcs -ftest-coverage"
 LINK_COMMAND = "ld -m elf_i386 -T %s -o %s %s %s"
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -76,7 +76,7 @@ def build():
     print("Done!")
 
 def test():
-    build()
+    # build()
     test_unit()
     test_integration()
 
@@ -88,6 +88,7 @@ def test_unit():
         COMPILE_TEST_COMMAND % (
             ' '.join(UNIT_TEST_FILES), 
             ' '.join(glob.glob(os.path.join(SRC_DIR, 'common', '*.c'))), # temporary workaround
+            # ' '.join(BIN_FILES),
             # ' '.join(SOURCE_FILES), # TODO get unit tests working with all source files
         )
     )
