@@ -10,4 +10,4 @@ services:
         volumes:
             - .:/pkos
         network_mode: 'host' # makes x11 windows work for `make run`
-        entrypoint: ['make', 'run']
+        entrypoint: ['scripts/os.py', 'run']

@@ -1,6 +1,6 @@
 import time
 
-from .qemu_driver import QemuDriver, parse_screen_memory
+from .qemu_driver import QemuDriver, parse_screen_memory, SCREEN_FILE
 
 
 def test_help():
@@ -12,10 +12,10 @@ def test_help():
     driver.type("sendkey p\n")
     driver.type("sendkey kp_enter\n")
     time.sleep(1) # allow vid memory to catch up
-    driver.dump_screen('screen.bin')
+    driver.dump_screen(SCREEN_FILE)
     driver.quit()
-    time.sleep(1) # wait for it to make screen.bin
-    screen_text, _ = parse_screen_memory('screen.bin')
+    time.sleep(1) # wait for it to make screen file
+    screen_text, _ = parse_screen_memory(SCREEN_FILE)
     assert screen_text[4].strip() == 'pkos> help'
     assert screen_text[5].strip() == 'ls: List files'
     assert screen_text[6].strip() == 'clear: Clear screen'
@@ -29,10 +29,10 @@ def test_ls():
     driver.type("sendkey s\n")
     driver.type("sendkey kp_enter\n")
     time.sleep(1) # allow vid memory to catch up
-    driver.dump_screen('screen.bin')
+    driver.dump_screen(SCREEN_FILE)
     driver.quit()
-    time.sleep(1) # wait for it to make screen.bin
-    screen_text, _ = parse_screen_memory('screen.bin')
+    time.sleep(1) # wait for it to make screen file
+    screen_text, _ = parse_screen_memory(SCREEN_FILE)
     assert screen_text[4].strip() == 'pkos> ls'
     assert screen_text[5].strip() == 'Filesystem not yet implemented.'
     assert screen_text[6].strip() == 'pkos>'
@@ -47,10 +47,10 @@ def test_clear():
     driver.type("sendkey r\n")
     driver.type("sendkey kp_enter\n")
     time.sleep(1) # allow vid memory to catch up
-    driver.dump_screen('screen.bin')
+    driver.dump_screen(SCREEN_FILE)
     driver.quit()
-    time.sleep(1) # wait for it to make screen.bin
-    screen_text, _ = parse_screen_memory('screen.bin')
+    time.sleep(1) # wait for it to make screen file
+    screen_text, _ = parse_screen_memory(SCREEN_FILE)
     assert screen_text[0].strip() == 'pkos>'
     for line in screen_text[1:]:
         assert line.strip() == ''
@@ -63,8 +63,8 @@ def test_vga():
     driver.type("sendkey a\n")
     driver.type("sendkey kp_enter\n")
     time.sleep(1) # allow vid memory to catch up
-    driver.dump_screen('screen.bin')
+    driver.dump_screen(SCREEN_FILE)
     driver.quit()
-    time.sleep(1) # wait for it to make screen.bin
-    # screen_text, _ = parse_screen_memory('screen.bin') # unicode decode error because video memory is no well-formatted
+    time.sleep(1) # wait for it to make screen file
+    # screen_text, _ = parse_screen_memory(SCREEN_FILE) # unicode decode error because video memory is no well-formatted
     # TODO actually make some assertions. See #1 on GitLab

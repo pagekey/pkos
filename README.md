@@ -8,15 +8,15 @@ Check out the accomapnying video/blog article series: https://pagekeytech.com/pr
 
 Try these commands to get started in a hurry.
 
-- `docker-compose up` - Build and run the OS (added in OS13)
-  - You must have Docker/`docker-compose` installed and configured for GUI applications to run within a container.
-  - Also available:
-    - `scripts/docker_build`: (Re)build your Docker dev container with the latest `Dockerfile`
-    - `scripts/docker_run`: Same as `docker-compose up` - run it now
-    - `scripts/docker_shell`: Get a shell inside the docker environment to do as you please
-- `make` - Build the OS
-- `make run` - Run the OS in Qemu, an x86 emulator
-- `make iso` - Build an ISO image of the OS. This file can be burned to a disk or USB drive. Then you can run it on real hardware!
+1. Ensure you have `docker` and `docker-compose` installed and ready to go on your system.
+
+2. Run `./scripts/docker_shell` to build the dev environment and get a shell inside of it to work in.
+
+3. From inside the system, run the OS with: `./scripts/os.py run`.
+
+## Commands
+
+Run `./scripts/os.py` with no arguments to list the usage. It includes subcommands for building, testing, and running the OS.
 
 ## Troubleshooting
 
@@ -36,7 +36,7 @@ Use the "Release Tag" listed below for the video you would like to run the code 
 ```bash
 git clone https://gitlab.com/pagekeytech/pkos
 cd pkos
-git checkout TAG
+git checkout (whichever tag)
 make
 make run
 ```

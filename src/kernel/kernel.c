@@ -6,8 +6,6 @@
 
 // ----- Global variables -----
 struct IDT_entry IDT[IDT_SIZE]; // This is our entire IDT. Room for 256 interrupts
-int cursor_row = 0;
-int cursor_col = 0;
 
 char command_buffer[COMMAND_BUFFER_SIZE];
 int command_len = 0;
@@ -17,36 +15,9 @@ void disable_cursor() {
 	ioport_out(0x3D5, 0x20);
 }
 
-void println(char* string, int len) {
-	print(string, len);
-	cursor_col = 0;
-	cursor_row++;
-}
-
-void print(char* string, int len) {
-	for (int i = 0; i < len; i++) {
-		printchar(string[i], cursor_row, cursor_col);
-		cursor_col++;
-	}
-}
-
-void printchar(char c, int row, int col) {
-	// OFFSET = (ROW * 80) + COL
-	char* offset = (char*) (VIDMEM + 2*((row * COLS) + col));
-	*offset = c;
-}
-
-void clear_screen() {
-	for (int i = 0; i < ROWS; i++) {
-		for (int j = 0; j < COLS; j++) {
-			printchar(' ', i, j);
-		}
-	}
-}
-
 void init_idt() {
 	// Get the address of the keyboard_handler code in kernel.asm as a number
-	unsigned int kb_handler_offset = (unsigned int)keyboard_handler;
+	unsigned int kb_handler_offset = (unsigned long)keyboard_handler;
 	// Populate the first entry of the IDT
 
 	// why 0x21 and not 0x0? first 32 interrupts (up to 0x20)
@@ -112,7 +83,7 @@ void init_idt() {
 	// which is all we need to do to make it active.
 	struct IDT_pointer idt_ptr;
 	idt_ptr.limit = (sizeof(struct IDT_entry) * IDT_SIZE) - 1;
-	idt_ptr.base = (unsigned int) &IDT;
+	idt_ptr.base = (unsigned long) &IDT;
 	// Now load this IDT
 	load_idt(&idt_ptr);
 }
@@ -135,14 +106,12 @@ void handle_keyboard_interrupt() {
 		if (keycode < 0 || keycode >= 128) return;
 		if (keycode == 28) {
 			// ENTER : Newline
-			cursor_row++;
-			cursor_col = 0;
+			newline();
 			// Handle command
 			if (streq(command_buffer, command_len, "ls", 2)) {
 				println("Filesystem not yet implemented.", 31);
 			} else if (streq(command_buffer, command_len, "clear", 5)) {
 				clear_screen();
-				cursor_row = 0;
 			} else if (streq(command_buffer, command_len, "vga", 3)) {
 				vga_test();
 			} else if (streq(command_buffer, command_len, "help", 4)) {
@@ -160,45 +129,20 @@ void handle_keyboard_interrupt() {
 			print_prompt();
 		} else if (keycode == 14) {
 			// BACKSPACE: Move back one unless on prompt
-			if (cursor_col > PROMPT_LENGTH) {
-				print_char_with_asm(' ', cursor_row, --cursor_col);
+			backspace();
+			if (command_len > 0) {
+				command_len--;
 			}
 		} else {
 			if (command_len >= COMMAND_BUFFER_SIZE) return;
 			command_buffer[command_len++] = keyboard_map[keycode];
-			printchar(keyboard_map[keycode], cursor_row, cursor_col++);
-			if (cursor_col >= COLS) {
-				cursor_col = cursor_col % COLS;
-				cursor_row++;
-			}
+			printchar(keyboard_map[keycode]);
 		}
 	}
-}
-
-void print_prompt() {
-	cursor_col = 0;
-	print(PROMPT, PROMPT_LENGTH);
-	cursor_col = PROMPT_LENGTH;
-}
-
-void print_message() {
-	// Fill the screen with 'x'
-	int i, j;
-	for (i = 0; i < COLS; i++) {
-		for (j = 0; j < ROWS; j++) {
-			if (j < 4) {
-				print_char_with_asm('*',j,i);
-			} else {
-				print_char_with_asm(' ',j,i);
-			}
-		}
-	}
-	print("-PKOS-", 6);
-	cursor_row = 4;
 }
 
 // ----- Entry point -----
-void main() {
+int main() {
 	print_message();
 	print_prompt();
 	disable_cursor();
