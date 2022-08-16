@@ -69,3 +69,47 @@ docker-compose push
 - Unit tests:
   - `./scripts/test_unit`
   - Use `NOCOV=1 ./scripts/test_unit` to skip coverage
+
+## Videos
+
+[Full Playlist](https://www.youtube.com/playlist?list=PL3Kz_hCNpKSTFCTJtP4-9mkYDVM7rAprW)
+
+- [OS1: Installing VirtualBox & Debian on Windows](https://www.youtube.com/watch?v=NtZzb9ZJ5Fo&list=PL3Kz_hCNpKSTFCTJtP4-9mkYDVM7rAprW&index=2)
+  - tag: `vid/os001`
+- [OS2: Running Our First Bootloader](https://www.youtube.com/watch?v=1lAuJoPZ3Q0&list=PL3Kz_hCNpKSTFCTJtP4-9mkYDVM7rAprW&index=2)
+  - tag: `vid/os002`
+- [OS3: Hone the Power of the BIOS!](https://www.youtube.com/watch?v=W3DdyiO3Fy8&list=PL3Kz_hCNpKSTFCTJtP4-9mkYDVM7rAprW&index=3)
+  - tag: `vid/os003`
+- [OS4: Deciphering BIOS Challenges](https://www.youtube.com/watch?v=9dU7CyKkHew&list=PL3Kz_hCNpKSTFCTJtP4-9mkYDVM7rAprW&index=4)
+  - tag: `vid/os004`
+- [OS5: Going Over print_hex](https://www.youtube.com/watch?v=IvUl1ocS64g&list=PL3Kz_hCNpKSTFCTJtP4-9mkYDVM7rAprW&index=5)
+  - tag: `vid/os005`
+- [OS6: Reading the Disk](https://www.youtube.com/watch?v=mktENQzbm6k&list=PL3Kz_hCNpKSTFCTJtP4-9mkYDVM7rAprW&index=6)
+  - tag: `vid/os006`
+- [OS7: Making the Jump](https://www.youtube.com/watch?v=IU9zXYdYV9I&list=PL3Kz_hCNpKSTFCTJtP4-9mkYDVM7rAprW&index=7)
+  - tag: `vid/os007`
+- [OS8: C at Last!](https://www.youtube.com/watch?v=5RWjI83C47k&list=PL3Kz_hCNpKSTFCTJtP4-9mkYDVM7rAprW&index=8)
+  - tag: `vid/os008`
+- [OS9: Multiboot (Bootloader Breakup)](https://www.youtube.com/watch?v=UraQLWvn9Vg&list=PL3Kz_hCNpKSTFCTJtP4-9mkYDVM7rAprW&index=9)
+  - tag: `vid/os009`
+- [OS10: Real Hardware](https://www.youtube.com/watch?v=-V-eKSKwexs&list=PL3Kz_hCNpKSTFCTJtP4-9mkYDVM7rAprW&index=10)
+  - tag: `vid/os010`
+- [OS11: Calling Assembly from C](https://www.youtube.com/watch?v=ZsnKjqsFwwY&list=PL3Kz_hCNpKSTFCTJtP4-9mkYDVM7rAprW&index=11)
+  - tag: `vid/os011`
+- [OS12: Basic Keyboard Driver (x86 Interrupts)](https://www.youtube.com/watch?v=YtnNX074jMU&list=PL3Kz_hCNpKSTFCTJtP4-9mkYDVM7rAprW&index=12)
+  - tag: `vid/os012`
+- [OS13: Docker Dev Environment](https://www.youtube.com/watch?v=qN_24B2OJ5U&list=PL3Kz_hCNpKSTFCTJtP4-9mkYDVM7rAprW&index=13)
+  - tag: `vid/os013`
+- [OS14: Organizing Our OS Code](https://www.youtube.com/watch?v=Qa-WjNWkNeA&list=PL3Kz_hCNpKSTFCTJtP4-9mkYDVM7rAprW&index=14)
+  - tag: `vid/os014`
+- [OS15: Writing a Simple VGA Driver (Graphics)](https://www.youtube.com/watch?v=GllPGcVLEDY&list=PL3Kz_hCNpKSTFCTJtP4-9mkYDVM7rAprW&index=15)
+  - tag: `vid/os015`
+- [OS16: Testing QEMU in CI/CD Using Pytest](https://www.youtube.com/watch?v=zcqJHKUKipg&list=PL3Kz_hCNpKSTFCTJtP4-9mkYDVM7rAprW&index=16)
+  - tag: `vid/os016`
+  - MR: !1
+- [OS17: Unit Testing C Code with Gtest, LCOV, Genhtml](https://www.youtube.com/watch?v=M4JG1Ej4x-c&list=PL3Kz_hCNpKSTFCTJtP4-9mkYDVM7rAprW&index=17)
+  - tag: `vid/os017`
+  - MR: !2
+- [OS18: Shredding the Makefile](https://www.youtube.com/watch?v=XLzVL8VA7Yc&list=PL3Kz_hCNpKSTFCTJtP4-9mkYDVM7rAprW&index=18)
+  - tag: `vid/os018`
+  - MR: !3
