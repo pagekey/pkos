@@ -113,7 +113,7 @@ def run_debug():
     os.system('gdb -x .gdbinit')
 
 def clean():
-    pretty_call('rm -rf build dist public')
+    os.system('rm -rf build dist public *.gcno a.out')
 
 def print_usage():
     print("Usage: %s [build,test,run,run_debug,clean]" % sys.argv[0])
