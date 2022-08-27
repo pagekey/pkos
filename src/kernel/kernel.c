@@ -114,10 +114,13 @@ void handle_keyboard_interrupt() {
 				clear_screen();
 			} else if (streq(command_buffer, command_len, "vga", 3)) {
 				vga_test();
+			} else if (streq(command_buffer, command_len, "vgainfo", 7)) {
+				vga_info();
 			} else if (streq(command_buffer, command_len, "help", 4)) {
 				println("ls: List files", 14);
 				println("clear: Clear screen", 19);
 				println("vga: Run VGA test", 17);
+				println("vgainfo: Print VGA info", 24);
 			} else if (command_len < 1) {
 				// do nothing
 			} else {

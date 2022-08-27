@@ -3,6 +3,7 @@
 
 #define VGA_ADDRESS 0xA0000
 
+void vga_info();
 void vga_test();
 void vga_clear_screen();
 void vga_plot_pixel(int x, int y, unsigned short color);

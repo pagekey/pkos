@@ -26,6 +26,19 @@ unsigned char g_320x200x256[] =
 	0x41, 0x00, 0x0F, 0x00,	0x00
 };
 
+void vga_info() {
+	println("Getting VGA info", 16);
+	// Check the RAM enable field
+	unsigned int misc_output_reg = ioport_in(0x3CC);
+	unsigned int ram_enable = (misc_output_reg & 0b10) >> 1;
+	print("RAM enable: ", 12);
+	if (ram_enable == 0) {
+		println("disabled", 8);
+	} else {
+		println("enabled", 7);
+	}
+}
+
 void vga_test() {
     println("Attempting to switch modes...", 29);
     write_regs(g_320x200x256);
