@@ -120,7 +120,7 @@ void handle_keyboard_interrupt() {
 				println("ls: List files", 14);
 				println("clear: Clear screen", 19);
 				println("vga: Run VGA test", 17);
-				println("vgainfo: Print VGA info", 24);
+				println("vgainfo: Print VGA info", 23);
 			} else if (command_len < 1) {
 				// do nothing
 			} else {
