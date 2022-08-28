@@ -13,6 +13,7 @@ COLOR_RESET = '\033[0m'
 
 ASSEMBLE_COMMAND = "nasm -f elf32 %s -o %s"
 COMPILE_COMMAND = "gcc -m32 -ffreestanding -fpermissive -c %s -o %s"
+COMPILE_COMMAND_DEBUG = "gcc -ggdb -m32 -ffreestanding -fpermissive -c %s -o %s"
 COMPILE_TEST_COMMAND = "g++ %s %s -m32 -lgtest -lgtest_main -pthread -fprofile-arcs -ftest-coverage"
 LINK_COMMAND = "ld -m elf_i386 -T %s -o %s %s %s"
 
@@ -40,7 +41,7 @@ def pretty_call(command, color=COLOR_GREEN_BOLD, shell=False):
     pretty_print(command, color)
     subprocess.check_call(command.split(), shell=shell)
 
-def build():
+def build(debug=False):
     os.makedirs('build', exist_ok=True)
     os.makedirs('dist', exist_ok=True)
     os.makedirs('public', exist_ok=True)
@@ -51,7 +52,11 @@ def build():
     
     # Compile C code
     for file_in, file_out in zip(SOURCE_FILES, O_FILES):
-        rendered_command = COMPILE_COMMAND % (file_in, file_out)
+        if debug:
+            compile_command = COMPILE_COMMAND_DEBUG
+        else:
+            compile_command = COMPILE_COMMAND
+        rendered_command = compile_command % (file_in, file_out)
         pretty_call(rendered_command, COLOR_YELLOW_BOLD)
     
     # Link the assembly and C code together, create .bin file
@@ -108,7 +113,7 @@ def run():
     pretty_call('qemu-system-i386 -kernel %s -monitor stdio' % KERNEL_OUT)
 
 def run_debug():
-    build()
+    build(debug=True)
     os.system(f'qemu-system-i386 -kernel {KERNEL_OUT} -s -S &')
     os.system('gdb -x .gdbinit')
 
