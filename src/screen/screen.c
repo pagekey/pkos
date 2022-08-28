@@ -3,6 +3,19 @@
 int cursor_row = 0;
 int cursor_col = 0;
 
+void println(char* string) {
+	print(string);
+	newline();
+}
+
+void print(char* string) {
+	int i = 0;
+	while (string[i] != '\0') {
+		printchar(string[i]);
+		i++;
+	}
+}
+
 void safe_println(char* string, int len) {
 	safe_print(string, len);
 	cursor_col = 0;
@@ -52,7 +65,7 @@ void backspace() {
 
 void print_prompt() {
 	cursor_col = 0;
-	safe_print(PROMPT, PROMPT_LENGTH);
+	print(PROMPT);
 	cursor_col = PROMPT_LENGTH;
 }
 
@@ -68,6 +81,6 @@ void print_message() {
 			}
 		}
 	}
-	safe_print("-PKOS-", 6);
+	print("-PKOS-");
 	cursor_row = 4;
 }

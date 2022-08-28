@@ -7,8 +7,8 @@
 #define PROMPT "pkos> "
 #define PROMPT_LENGTH 6
 
-// void println(char* string, int len);
-// void print(char* string, int len);
+void println(char* string);
+void print(char* string);
 void safe_println(char* string, int len);
 void safe_print(char* string, int len);
 void printchar(char c);

@@ -27,15 +27,15 @@ unsigned char g_320x200x256[] =
 };
 
 void vga_info() {
-	safe_println("Getting VGA info", 16);
+	println("Getting VGA info");
 	// Check the RAM enable field
 	unsigned int misc_output_reg = ioport_in(0x3CC);
 	unsigned int ram_enable = (misc_output_reg & 0b10) >> 1;
-	safe_print("RAM enable: ", 12);
+	print("RAM enable: ");
 	if (ram_enable == 0) {
-		safe_println("disabled", 8);
+		println("disabled");
 	} else {
-		safe_println("enabled", 7);
+		println("enabled");
 	}
 	// Check the Memory Map Select field
 	unsigned int saved_addr_reg = ioport_in(0x3ce);
@@ -43,16 +43,16 @@ void vga_info() {
 	unsigned int misc_graphics_reg = ioport_in(0x3cf);
 	ioport_out(0x3ce, saved_addr_reg);
 	unsigned int mem_map_select = (misc_graphics_reg & 0b1100) >> 2;
-	safe_print("Memory Map Select: ", 19);
+	print("Memory Map Select: ");
 	// Wow this next part is terrible
 	if (mem_map_select == 0b00) {
-		safe_println("0b00", 4);
+		println("0b00");
 	} else if (mem_map_select == 0b01) {
-		safe_println("0b01", 4);
+		println("0b01");
 	} else if (mem_map_select == 0b10) {
-		safe_println("0b10", 4);
+		println("0b10");
 	} else if (mem_map_select == 0b11) {
-		safe_println("0b11", 4);
+		println("0b11");
 	}
 	// just sad
 
@@ -60,7 +60,7 @@ void vga_info() {
 }
 
 void vga_test() {
-    safe_println("Attempting to switch modes...", 29);
+    println("Attempting to switch modes...");
     write_regs(g_320x200x256);
     vga_clear_screen();
 	// draw rectangle
