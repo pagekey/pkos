@@ -29,6 +29,10 @@ char* _itoa(int integer, char* result, int base) {
         result[num_digits-i-1] = tmp;
     }
     // Null terminate the string
+	if (num_digits == 0) {
+		num_digits = 1;
+		result[0] = '0';
+	}
     result[num_digits] = '\0';
 	return result;
 }

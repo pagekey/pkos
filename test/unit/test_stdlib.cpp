@@ -2,6 +2,12 @@
 #include "../../src/common/stdlib.h"
 
 
+TEST ( stdlib, itoa_zero ) {
+    int a = 0;
+    char c[10];
+    ASSERT_TRUE(streq(itoa(a, c), "0"));
+}
+
 TEST ( stdlib, itoa ) {
     int a = 12345;
     char c[10];

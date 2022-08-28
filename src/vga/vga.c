@@ -37,29 +37,18 @@ void vga_info() {
 	} else {
 		println("enabled");
 	}
-	// Check the Memory Map Select field
+	// Check the Memory Map Select field and Alphanumeric Diable field
 	unsigned int saved_addr_reg = ioport_in(0x3ce);
 	ioport_out(0x3ce, 0x06);
 	unsigned int misc_graphics_reg = ioport_in(0x3cf);
 	ioport_out(0x3ce, saved_addr_reg);
 	unsigned int mem_map_select = (misc_graphics_reg & 0b1100) >> 2;
-	print("Memory Map Select: ");
-	// Wow this next part is terrible
-	if (mem_map_select == 0b00) {
-		println("0b00");
-	} else if (mem_map_select == 0b01) {
-		println("0b01");
-	} else if (mem_map_select == 0b10) {
-		println("0b10");
-	} else if (mem_map_select == 0b11) {
-		println("0b11");
-	}
-	char buffer[100];
-	print("0b");
-	println(itoab(12345, buffer));
-	// just sad
-
-	// Check graphics mode register
+	unsigned int alpha_dis = misc_graphics_reg & 1;
+	print("Memory Map Select: 0b");
+	char buffer[2];
+	println(itoab(mem_map_select, buffer));
+	print("Alphanumeric disable: 0b");
+	println(itoa(alpha_dis, buffer));
 }
 
 void vga_test() {
