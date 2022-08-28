@@ -78,3 +78,8 @@ void terrible_sleep_impl(int ticks) {
 	volatile int i = 0;
 	while (i < ticks*100000) i++;
 }
+
+extern void _memcpy_asm(unsigned int dest, unsigned int src, unsigned int size); // see stdlib.asm
+void memcpy(unsigned int dest, unsigned int src, unsigned int size) {
+	_memcpy_asm(dest, src, size);
+}

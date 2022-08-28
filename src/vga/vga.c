@@ -51,11 +51,33 @@ void vga_info() {
 
 void vga_test() {
     println("Attempting to switch modes...");
+
+	// Save video memory somewhere else
+	// 0xb8000 to 0xbffff (32K)
+	memcpy(0xb0000, 0xb8000, 10);
+
 	// Set alphanumeric disable = 1
 	unsigned int misc_reg = get_graphics_reg(GRAPHICS_IDX_MISC);
 	misc_reg |= 1; // bit 0 is alphanumeric disable, set it to 1
 	set_graphics_reg(GRAPHICS_IDX_MISC, misc_reg);
 
+    // vga_clear_screen();
+	// draw rectangle
+	draw_rectangle(150, 10, 100, 50);
+	// draw some faces
+	draw_happy_face(10,10);
+	draw_happy_face(100,100);
+	draw_happy_face(300,150);
+	// bounds
+	vga_plot_pixel(0, 0, 15);
+	vga_plot_pixel(319, 199, COLOR_PURPLE);
+	// see some colors
+	for (int i = 0; i < 15; i++) {
+		for (int j = 0; j < 100; j++) {
+			vga_plot_pixel(i, 50+j, i);
+		}
+	}
+	
 	terrible_sleep_impl(2500);
 
 	// Go back to alphanumeric disable 0
@@ -65,27 +87,14 @@ void vga_test() {
 	misc_reg |= 0b1100; // set mem map select to 11
 	set_graphics_reg(GRAPHICS_IDX_MISC, misc_reg);
 
-	clear_screen();
-	print_prompt();
+	// Restore text-mode video memory
+	memcpy(0xb8000, 0xb0000, 10);
 
-	vga_info();
+	// clear_screen();
+	// print_prompt();
 
-    // vga_clear_screen();
-	// // draw rectangle
-	// draw_rectangle(150, 10, 100, 50);
-	// // draw some faces
-	// draw_happy_face(10,10);
-	// draw_happy_face(100,100);
-	// draw_happy_face(300,150);
-	// // bounds
-	// vga_plot_pixel(0, 0, 15);
-	// vga_plot_pixel(319, 199, COLOR_PURPLE);
-	// // see some colors
-	// for (int i = 0; i < 15; i++) {
-	// 	for (int j = 0; j < 100; j++) {
-	// 		vga_plot_pixel(i, 50+j, i);
-	// 	}
-	// }
+	// vga_info();
+
 }
 
 void draw_rectangle(int x, int y, int width, int height) {
