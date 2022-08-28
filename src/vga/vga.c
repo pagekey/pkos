@@ -61,22 +61,23 @@ void vga_test() {
 	misc_reg |= 1; // bit 0 is alphanumeric disable, set it to 1
 	set_graphics_reg(GRAPHICS_IDX_MISC, misc_reg);
 
-    vga_clear_screen();
-	// draw rectangle
-	draw_rectangle(150, 10, 100, 50);
-	// draw some faces
-	draw_happy_face(10,10);
-	draw_happy_face(100,100);
-	draw_happy_face(300,150);
-	// bounds
-	vga_plot_pixel(0, 0, 15);
-	vga_plot_pixel(319, 199, COLOR_PURPLE);
-	// see some colors
-	for (int i = 0; i < 15; i++) {
-		for (int j = 0; j < 100; j++) {
-			vga_plot_pixel(i, 50+j, i);
-		}
-	}
+	memset(0xb8000, 0, 320*5);
+    // vga_clear_screen();
+	// // draw rectangle
+	// draw_rectangle(150, 10, 100, 50);
+	// // draw some faces
+	// draw_happy_face(10,10);
+	// draw_happy_face(100,100);
+	// draw_happy_face(300,150);
+	// // bounds
+	// vga_plot_pixel(0, 0, 15);
+	// vga_plot_pixel(319, 199, COLOR_PURPLE);
+	// // see some colors
+	// for (int i = 0; i < 15; i++) {
+	// 	for (int j = 0; j < 100; j++) {
+	// 		vga_plot_pixel(i, 50+j, i);
+	// 	}
+	// }
 	
 	terrible_sleep_impl(2500);
 
@@ -89,12 +90,6 @@ void vga_test() {
 
 	// Restore text-mode video memory
 	memcpy(0xb8000, 0x0010b8000, COLS*ROWS*2);
-
-	// clear_screen();
-	// print_prompt();
-
-	// vga_info();
-
 }
 
 void draw_rectangle(int x, int y, int width, int height) {
