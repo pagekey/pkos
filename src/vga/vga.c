@@ -10,6 +10,8 @@
 #define GRAPHICS_REG_DATA 0x3cf
 #define GRAPHICS_IDX_MISC 0x06
 
+unsigned int vga_mode_var = 0;
+
 // Graphics Registers: 0x3ce = addr, 0x3cf = data
 // see http://www.osdever.net/FreeVGA/vga/graphreg.htm
 unsigned int get_graphics_reg(unsigned int index) {
@@ -49,7 +51,9 @@ void vga_info() {
 	println(itoa(alpha_dis, buffer));
 }
 
-void vga_test() {
+void vga_enter() {
+	if (vga_mode_var == 1) return;
+	vga_mode_var = 1;
     println("Attempting to switch modes...");
 
 	// Save video memory somewhere else
@@ -61,7 +65,7 @@ void vga_test() {
 	misc_reg |= 1; // bit 0 is alphanumeric disable, set it to 1
 	set_graphics_reg(GRAPHICS_IDX_MISC, misc_reg);
 
-	memset(0xb8000, 0, 320*5);
+	memset(0xb8000, 0, 60);
     // vga_clear_screen();
 	// // draw rectangle
 	// draw_rectangle(150, 10, 100, 50);
@@ -79,10 +83,12 @@ void vga_test() {
 	// 	}
 	// }
 	
-	terrible_sleep_impl(2500);
+}
 
+void vga_exit() {
+	if (vga_mode_var == 0) return;
 	// Go back to alphanumeric disable 0
-	misc_reg = get_graphics_reg(GRAPHICS_IDX_MISC);
+	unsigned int misc_reg = get_graphics_reg(GRAPHICS_IDX_MISC);
 	misc_reg &= 0; // set alphanum disable back to 0
 	misc_reg |= 0b10; // bit 1 is RAM enable, set it to 1
 	misc_reg |= 0b1100; // set mem map select to 11
@@ -90,6 +96,10 @@ void vga_test() {
 
 	// Restore text-mode video memory
 	memcpy(0xb8000, 0x0010b8000, COLS*ROWS*2);
+
+	vga_mode_var = 0;
+
+	print_prompt();
 }
 
 void draw_rectangle(int x, int y, int width, int height) {

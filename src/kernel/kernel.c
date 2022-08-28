@@ -115,7 +115,7 @@ void handle_keyboard_interrupt() {
 			} else if (streq(command_buffer, "clear")) {
 				clear_screen();
 			} else if (streq(command_buffer, "vga")) {
-				vga_test();
+				vga_enter();
 			} else if (streq(command_buffer, "vgainfo")) {
 				vga_info();
 			} else if (streq(command_buffer, "help")) {
@@ -138,6 +138,9 @@ void handle_keyboard_interrupt() {
 			if (command_len > 0) {
 				command_len--;
 			}
+		} else if (keycode == 1) {
+			// ESCAPE
+			vga_exit();
 		} else {
 			if (command_len >= COMMAND_BUFFER_SIZE) return;
 			command_buffer[command_len++] = keyboard_map[keycode];
