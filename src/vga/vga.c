@@ -6,44 +6,42 @@
 #define COLOR_GREEN 0x2
 #define COLOR_PURPLE 0xf
 
-unsigned char g_320x200x256[] =
-{
-/* MISC */
-	0x63,
-/* SEQ */
-	0x03, 0x01, 0x0F, 0x00, 0x0E,
-/* CRTC */
-	0x5F, 0x4F, 0x50, 0x82, 0x54, 0x80, 0xBF, 0x1F,
-	0x00, 0x41, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-	0x9C, 0x0E, 0x8F, 0x28,	0x40, 0x96, 0xB9, 0xA3,
-	0xFF,
-/* GC */
-	0x00, 0x00, 0x00, 0x00, 0x00, 0x40, 0x05, 0x0F,
-	0xFF,
-/* AC */
-	0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
-	0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
-	0x41, 0x00, 0x0F, 0x00,	0x00
-};
+#define GRAPHICS_REG_ADDR 0x3ce
+#define GRAPHICS_REG_DATA 0x3cf
+#define GRAPHICS_IDX_MISC 0x06
+
+// Graphics Registers: 0x3ce = addr, 0x3cf = data
+// see http://www.osdever.net/FreeVGA/vga/graphreg.htm
+unsigned int get_graphics_reg(unsigned int index) {
+	unsigned int saved_addr_reg = ioport_in(GRAPHICS_REG_ADDR);
+	ioport_out(GRAPHICS_REG_ADDR, index);
+	unsigned int graphics_reg_value = ioport_in(GRAPHICS_REG_DATA);
+	ioport_out(GRAPHICS_REG_ADDR, saved_addr_reg); // restore address register
+	return graphics_reg_value;
+}
+void set_graphics_reg(unsigned int index, unsigned int value) {
+	unsigned int saved_addr_reg = ioport_in(GRAPHICS_REG_ADDR);
+	ioport_out(GRAPHICS_REG_ADDR, index);
+	ioport_out(GRAPHICS_REG_DATA, value);
+	ioport_out(GRAPHICS_REG_ADDR, saved_addr_reg); // restore address register
+}
 
 void vga_info() {
 	println("Getting VGA info");
-	// Check the RAM enable field
-	unsigned int misc_output_reg = ioport_in(0x3CC);
-	unsigned int ram_enable = (misc_output_reg & 0b10) >> 1;
+	unsigned int misc_reg = get_graphics_reg(GRAPHICS_IDX_MISC);
+	// RAM Enable: is VGA checking the memory set by CPU? (are we bothering to use mem-mapped I/O from CPU?)
+	unsigned int ram_enable = (misc_reg & 0b10) >> 1;
+	// Memory Map Select: which area of memory should be used to draw the screen?
+	unsigned int mem_map_select = (misc_reg & 0b1100) >> 2;
+	// Alphanumeric Disable: are we disabling text mode (and instead interpreting memory as pixels?)
+	unsigned int alpha_dis = misc_reg & 1;
+	// Pretty-print each of these fields
 	print("RAM enable: ");
 	if (ram_enable == 0) {
 		println("disabled");
 	} else {
 		println("enabled");
 	}
-	// Check the Memory Map Select field and Alphanumeric Diable field
-	unsigned int saved_addr_reg = ioport_in(0x3ce);
-	ioport_out(0x3ce, 0x06);
-	unsigned int misc_graphics_reg = ioport_in(0x3cf);
-	ioport_out(0x3ce, saved_addr_reg);
-	unsigned int mem_map_select = (misc_graphics_reg & 0b1100) >> 2;
-	unsigned int alpha_dis = misc_graphics_reg & 1;
 	print("Memory Map Select: 0b");
 	char buffer[2];
 	println(itoab(mem_map_select, buffer));
@@ -54,27 +52,20 @@ void vga_info() {
 void vga_test() {
     println("Attempting to switch modes...");
 	// Set alphanumeric disable = 1
-	unsigned int saved_addr_reg = ioport_in(0x3ce);
-	ioport_out(0x3ce, 0x06); // index 06 = miscellaneous reg
-	unsigned int misc_graphics_reg = ioport_in(0x3cf);
-	misc_graphics_reg |= 1; // bit 0 is alphanumeric disable
-	ioport_out(0x3cf, misc_graphics_reg); // write back the register w/ new value
-	ioport_out(0x3ce, saved_addr_reg); // restore address register
+	unsigned int misc_reg = get_graphics_reg(GRAPHICS_IDX_MISC);
+	misc_reg |= 1; // bit 0 is alphanumeric disable, set it to 1
+	set_graphics_reg(GRAPHICS_IDX_MISC, misc_reg);
 
 	terrible_sleep_impl(2500);
 
 	// Go back to alphanumeric disable 0
-	saved_addr_reg = ioport_in(0x3ce);
-	ioport_out(0x3ce, 0x06); // index 06 = miscellaneous reg
-	misc_graphics_reg = ioport_in(0x3cf);
-	misc_graphics_reg &= 0; // bit 0 is alphanumeric disable
-	ioport_out(0x3cf, misc_graphics_reg); // write back the register w/ new value
-	ioport_out(0x3ce, saved_addr_reg); // restore address register
+	misc_reg = get_graphics_reg(GRAPHICS_IDX_MISC);
+	misc_reg &= 0; // bit 0 is alphanumeric disable, set it to 1
+	set_graphics_reg(GRAPHICS_IDX_MISC, misc_reg);
 
 	clear_screen();
 	print_prompt();
 
-    // write_regs(g_320x200x256);
     // vga_clear_screen();
 	// // draw rectangle
 	// draw_rectangle(150, 10, 100, 50);
@@ -135,58 +126,3 @@ void vga_plot_pixel(int x, int y, unsigned short color) {
     unsigned char *VGA = (unsigned char*) VGA_ADDRESS;
     VGA[offset] = color;
 }
-
-// Begin copied code
-// Source: https://files.osdev.org/mirrors/geezer/osd/graphics/modes.c
-// Changes:
-// - Initial: only grabbed code I thought was relevant to changing mode and displaying our first pixel (`write_regs`)
-// - Changed ioport_in, ioport_out funcs to instead point to ioport_in, ioport_out funcs defined in kernel.asm
-void write_regs(unsigned char *regs)
-{
-	unsigned i;
-
-/* write MISCELLANEOUS reg */
-	ioport_out(VGA_MISC_WRITE, *regs);
-	regs++;
-/* write SEQUENCER regs */
-	for(i = 0; i < VGA_NUM_SEQ_REGS; i++)
-	{
-		ioport_out(VGA_SEQ_INDEX, i);
-		ioport_out(VGA_SEQ_DATA, *regs);
-		regs++;
-	}
-/* unlock CRTC registers */
-	ioport_out(VGA_CRTC_INDEX, 0x03);
-	ioport_out(VGA_CRTC_DATA, ioport_in(VGA_CRTC_DATA) | 0x80);
-	ioport_out(VGA_CRTC_INDEX, 0x11);
-	ioport_out(VGA_CRTC_DATA, ioport_in(VGA_CRTC_DATA) & ~0x80);
-/* make sure they remain unlocked */
-	regs[0x03] |= 0x80;
-	regs[0x11] &= ~0x80;
-/* write CRTC regs */
-	for(i = 0; i < VGA_NUM_CRTC_REGS; i++)
-	{
-		ioport_out(VGA_CRTC_INDEX, i);
-		ioport_out(VGA_CRTC_DATA, *regs);
-		regs++;
-	}
-/* write GRAPHICS CONTROLLER regs */
-	for(i = 0; i < VGA_NUM_GC_REGS; i++)
-	{
-		ioport_out(VGA_GC_INDEX, i);
-		ioport_out(VGA_GC_DATA, *regs);
-		regs++;
-	}
-/* write ATTRIBUTE CONTROLLER regs */
-	for(i = 0; i < VGA_NUM_AC_REGS; i++)
-	{
-		(void)ioport_in(VGA_INSTAT_READ);
-		ioport_out(VGA_AC_INDEX, i);
-		ioport_out(VGA_AC_WRITE, *regs);
-		regs++;
-	}
-/* lock 16-color palette and unblank display */
-	(void)ioport_in(VGA_INSTAT_READ);
-	ioport_out(VGA_AC_INDEX, 0x20);
-}
-// End copied code
