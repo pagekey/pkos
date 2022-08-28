@@ -61,6 +61,19 @@ void vga_test() {
 	ioport_out(0x3cf, misc_graphics_reg); // write back the register w/ new value
 	ioport_out(0x3ce, saved_addr_reg); // restore address register
 
+	terrible_sleep_impl(2500);
+
+	// Go back to alphanumeric disable 0
+	saved_addr_reg = ioport_in(0x3ce);
+	ioport_out(0x3ce, 0x06); // index 06 = miscellaneous reg
+	misc_graphics_reg = ioport_in(0x3cf);
+	misc_graphics_reg &= 0; // bit 0 is alphanumeric disable
+	ioport_out(0x3cf, misc_graphics_reg); // write back the register w/ new value
+	ioport_out(0x3ce, saved_addr_reg); // restore address register
+
+	clear_screen();
+	print_prompt();
+
     // write_regs(g_320x200x256);
     // vga_clear_screen();
 	// // draw rectangle

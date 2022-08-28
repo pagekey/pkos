@@ -73,3 +73,8 @@ bool safe_streq(char* string1, int str1len, char* string2, int str2len) {
 	}
 	return true;
 }
+
+void terrible_sleep_impl(int ticks) {
+	volatile int i = 0;
+	while (i < ticks*100000) i++;
+}
