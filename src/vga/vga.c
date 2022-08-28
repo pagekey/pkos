@@ -54,6 +54,9 @@ void vga_info() {
 	} else if (mem_map_select == 0b11) {
 		println("0b11");
 	}
+	char buffer[100];
+	print("0b");
+	println(itoab(12345, buffer));
 	// just sad
 
 	// Check graphics mode register

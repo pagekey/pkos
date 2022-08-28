@@ -1,16 +1,25 @@
 #include "stdlib.h"
 
-char* itoa(int integer, char* result) {
+
+// Base method for itoa
+char* _itoa(int integer, char* result, int base) {
 	int num_digits = 0;
+	int val = 0;
     // Push each digit
 	while (integer > 0) {
         // Mod 10 gets just the last digit
         // Adding '0' turns it into an ASCII character
-		result[num_digits] = (integer % 10) + '0';
+		val = integer % base;
+		if (val < 10) {
+			result[num_digits] = val + '0';
+		} else {
+			result[num_digits] = val + 'a';
+		}
 		num_digits++;
         // Divide by 10 to get the next character in line
-		integer /= 10;
+		integer /= base;
 	}
+
     // Reverse it and return it
     char tmp = 0;
     for (int i = 0; i < num_digits/2; i++) {
@@ -22,6 +31,19 @@ char* itoa(int integer, char* result) {
     // Null terminate the string
     result[num_digits] = '\0';
 	return result;
+}
+
+// Integer to ASCII
+char* itoa(int integer, char* result) {
+	return _itoa(integer, result, 10);
+}
+// Integer to ASCII HEX
+char* itoah(int integer, char* result) {
+	return _itoa(integer, result, 16);
+}
+// Integer to ASCII Binary
+char* itoab(int integer, char* result) {
+	return _itoa(integer, result, 2);
 }
 
 bool streq(char* string1, char* string2) {
