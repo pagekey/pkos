@@ -1,5 +1,29 @@
 #include "stdlib.h"
 
+char* itoa(int integer, char* result) {
+	int num_digits = 0;
+    // Push each digit
+	while (integer > 0) {
+        // Mod 10 gets just the last digit
+        // Adding '0' turns it into an ASCII character
+		result[num_digits] = (integer % 10) + '0';
+		num_digits++;
+        // Divide by 10 to get the next character in line
+		integer /= 10;
+	}
+    // Reverse it and return it
+    char tmp = 0;
+    for (int i = 0; i < num_digits/2; i++) {
+        // Swap at each end of the array
+        tmp = result[i];
+        result[i] = result[num_digits-i-1];
+        result[num_digits-i-1] = tmp;
+    }
+    // Null terminate the string
+    result[num_digits] = '\0';
+	return result;
+}
+
 bool streq(char* string1, char* string2) {
 	int i = 0;
 	while (true) {

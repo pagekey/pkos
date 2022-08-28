@@ -2,6 +2,12 @@
 #include "../../src/common/stdlib.h"
 
 
+TEST ( stdlib, itoa ) {
+    int a = 12345;
+    char c[10];
+    ASSERT_TRUE(streq(itoa(a, c), "12345"));
+}
+
 TEST( stdlib, streq_equal ) {
     char* mystring = "hello";
     char* myotherstring = "hello";
