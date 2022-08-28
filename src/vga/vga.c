@@ -60,11 +60,15 @@ void vga_test() {
 
 	// Go back to alphanumeric disable 0
 	misc_reg = get_graphics_reg(GRAPHICS_IDX_MISC);
-	misc_reg &= 0; // bit 0 is alphanumeric disable, set it to 1
+	misc_reg &= 0; // set alphanum disable back to 0
+	misc_reg |= 0b10; // bit 1 is RAM enable, set it to 1
+	misc_reg |= 0b1100; // set mem map select to 11
 	set_graphics_reg(GRAPHICS_IDX_MISC, misc_reg);
 
 	clear_screen();
 	print_prompt();
+
+	vga_info();
 
     // vga_clear_screen();
 	// // draw rectangle
