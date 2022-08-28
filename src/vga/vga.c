@@ -54,14 +54,14 @@ void vga_test() {
 
 	// Save video memory somewhere else
 	// 0xb8000 to 0xbffff (32K)
-	memcpy(0xb0000, 0xb8000, 10);
+	memcpy(0x0010b8000, 0xb8000, COLS*ROWS*2);
 
 	// Set alphanumeric disable = 1
 	unsigned int misc_reg = get_graphics_reg(GRAPHICS_IDX_MISC);
 	misc_reg |= 1; // bit 0 is alphanumeric disable, set it to 1
 	set_graphics_reg(GRAPHICS_IDX_MISC, misc_reg);
 
-    // vga_clear_screen();
+    vga_clear_screen();
 	// draw rectangle
 	draw_rectangle(150, 10, 100, 50);
 	// draw some faces
@@ -88,7 +88,7 @@ void vga_test() {
 	set_graphics_reg(GRAPHICS_IDX_MISC, misc_reg);
 
 	// Restore text-mode video memory
-	memcpy(0xb8000, 0xb0000, 10);
+	memcpy(0xb8000, 0x0010b8000, COLS*ROWS*2);
 
 	// clear_screen();
 	// print_prompt();

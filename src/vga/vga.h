@@ -1,7 +1,7 @@
 #ifndef __VGA_H
 #define __VGA_H
 
-#define VGA_ADDRESS 0xA0000
+#define VGA_ADDRESS 0xB8000
 
 void vga_info();
 void vga_test();
