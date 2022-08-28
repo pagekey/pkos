@@ -7,8 +7,10 @@
 #define PROMPT "pkos> "
 #define PROMPT_LENGTH 6
 
-void println(char* string, int len);
-void print(char* string, int len);
+// void println(char* string, int len);
+// void print(char* string, int len);
+void safe_println(char* string, int len);
+void safe_print(char* string, int len);
 void printchar(char c);
 void printchar_at(char c, int row, int col);
 extern void print_char_with_asm(char c, int row, int col);
