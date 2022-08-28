@@ -7,6 +7,17 @@ TEST ( stdlib, itoa ) {
     char c[10];
     ASSERT_TRUE(streq(itoa(a, c), "12345"));
 }
+TEST ( stdlib, itoah ) {
+    int a = 12345;
+    char c[10];
+    ASSERT_TRUE(streq(itoah(a, c), "3039"));
+}
+TEST ( stdlib, itoab ) {
+    int a = 12345;
+    char c[15];
+    ASSERT_TRUE(streq(itoab(a, c), "11000000111001"));
+}
+
 
 TEST( stdlib, streq_equal ) {
     char* mystring = "hello";
