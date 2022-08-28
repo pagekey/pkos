@@ -12,7 +12,4 @@ bool safe_streq(char* string1, int str1len, char* string2, int str2len);
 
 void terrible_sleep_impl(int ticks);
 
-void memcpy(unsigned int dest, unsigned int src, unsigned int size);
-void memset(unsigned int addr, unsigned char fill, unsigned int size);
-
 #endif

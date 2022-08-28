@@ -1,5 +1,6 @@
 #include "vga.h"
 #include "../kernel/kernel.h"
+#include "../memory/memory.h"
 #include "../screen/screen.h"
 
 #define COLOR_BLACK 0x0
