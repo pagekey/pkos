@@ -53,23 +53,31 @@ void vga_info() {
 
 void vga_test() {
     println("Attempting to switch modes...");
-    write_regs(g_320x200x256);
-    vga_clear_screen();
-	// draw rectangle
-	draw_rectangle(150, 10, 100, 50);
-	// draw some faces
-	draw_happy_face(10,10);
-	draw_happy_face(100,100);
-	draw_happy_face(300,150);
-	// bounds
-	vga_plot_pixel(0, 0, 15);
-	vga_plot_pixel(319, 199, COLOR_PURPLE);
-	// see some colors
-	for (int i = 0; i < 15; i++) {
-		for (int j = 0; j < 100; j++) {
-			vga_plot_pixel(i, 50+j, i);
-		}
-	}
+	// Set alphanumeric disable = 1
+	unsigned int saved_addr_reg = ioport_in(0x3ce);
+	ioport_out(0x3ce, 0x06); // index 06 = miscellaneous reg
+	unsigned int misc_graphics_reg = ioport_in(0x3cf);
+	misc_graphics_reg |= 1; // bit 0 is alphanumeric disable
+	ioport_out(0x3cf, misc_graphics_reg); // write back the register w/ new value
+	ioport_out(0x3ce, saved_addr_reg); // restore address register
+
+    // write_regs(g_320x200x256);
+    // vga_clear_screen();
+	// // draw rectangle
+	// draw_rectangle(150, 10, 100, 50);
+	// // draw some faces
+	// draw_happy_face(10,10);
+	// draw_happy_face(100,100);
+	// draw_happy_face(300,150);
+	// // bounds
+	// vga_plot_pixel(0, 0, 15);
+	// vga_plot_pixel(319, 199, COLOR_PURPLE);
+	// // see some colors
+	// for (int i = 0; i < 15; i++) {
+	// 	for (int j = 0; j < 100; j++) {
+	// 		vga_plot_pixel(i, 50+j, i);
+	// 	}
+	// }
 }
 
 void draw_rectangle(int x, int y, int width, int height) {
