@@ -137,3 +137,6 @@ docker-compose push
 - [OS18: Shredding the Makefile](https://www.youtube.com/watch?v=XLzVL8VA7Yc&list=PL3Kz_hCNpKSTFCTJtP4-9mkYDVM7rAprW&index=18)
   - tag: `vid/os018`
   - MR: !3
+- [OS19: More VGA, stdlib, mmeory](https://www.youtube.com/watch?v=E26AtZNIj8c&list=PL3Kz_hCNpKSTFCTJtP4-9mkYDVM7rAprW&index=19)
+  - tag: `vid/os019`
+  - MR: !4
