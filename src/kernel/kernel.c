@@ -107,23 +107,28 @@ void handle_keyboard_interrupt() {
 		if (keycode == 28) {
 			// ENTER : Newline
 			newline();
+			// null terminate command buffer
+			command_buffer[command_len] = '\0';
 			// Handle command
-			if (streq(command_buffer, command_len, "ls", 2)) {
-				println("Filesystem not yet implemented.", 31);
-			} else if (streq(command_buffer, command_len, "clear", 5)) {
+			if (streq(command_buffer, "ls")) {
+				println("Filesystem not yet implemented.");
+			} else if (streq(command_buffer, "clear")) {
 				clear_screen();
-			} else if (streq(command_buffer, command_len, "vga", 3)) {
-				vga_test();
-			} else if (streq(command_buffer, command_len, "help", 4)) {
-				println("ls: List files", 14);
-				println("clear: Clear screen", 19);
-				println("vga: Run VGA test", 17);
+			} else if (streq(command_buffer, "vga")) {
+				vga_enter();
+			} else if (streq(command_buffer, "vgainfo")) {
+				vga_info();
+			} else if (streq(command_buffer, "help")) {
+				println("ls: List files");
+				println("clear: Clear screen");
+				println("vga: Run VGA test");
+				println("vgainfo: Print VGA info");
 			} else if (command_len < 1) {
 				// do nothing
 			} else {
-				print("Command not found: ", 19);
-				println(command_buffer, command_len);
-				println("Write `help` to see commands.", 29);
+				print("Command not found: ");
+				println(command_buffer);
+				println("Write `help` to see commands.");
 			}
 			command_len = 0;
 			print_prompt();
@@ -133,6 +138,9 @@ void handle_keyboard_interrupt() {
 			if (command_len > 0) {
 				command_len--;
 			}
+		} else if (keycode == 1) {
+			// ESCAPE
+			vga_exit();
 		} else {
 			if (command_len >= COMMAND_BUFFER_SIZE) return;
 			command_buffer[command_len++] = keyboard_map[keycode];
