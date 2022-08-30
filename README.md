@@ -25,6 +25,30 @@ Run `./scripts/os.py` with no arguments to list the usage. It includes subcomman
   - If you're on Windows, make sure that you have an X11 server installed and running.
     - Try [xming](https://sourceforge.net/projects/xming/) or [VcXsrv](https://sourceforge.net/projects/vcxsrv/)
 
+## How to Debug and Set Breakpoints
+
+1. Run `./scripts/docker_shell` to get into the container.
+
+2. Run `./scripts/os.py run_debug` to start in debug mode.
+
+3. In the GDB prompt in your terminal, type `whatever.c:1` to break when line 1 of `whatever.c` is executed.
+
+## How to Create Bootable USB on Linux
+
+1. Run `./scripts/docker_shell` to get into the container.
+
+2. Run `./scripts/os.py build` build the OS.
+
+3. Exit the container: `exit`
+
+4. Plug in a USB drive that you don't mind erasing. Run `dmesg -w` before plugging it in to watch and see which device name it is assigned.
+
+5. Run the following command (replace `/dev/sdx` with the USB device path):
+
+```bash
+dd if=dist/pkos.iso of=/dev/sdx
+```
+
 ## About This Repository 
 
 This repository will hold all versions of PKOS, from the simplest to the latest. To follow along with the tutorial, each increment of the OS will be accessible to you as a "release" on GitHub. You just have to clone this repository and checkout the right tag for the video you watched. Then, you should be able to build the code and run it on your own system.
@@ -113,3 +137,6 @@ docker-compose push
 - [OS18: Shredding the Makefile](https://www.youtube.com/watch?v=XLzVL8VA7Yc&list=PL3Kz_hCNpKSTFCTJtP4-9mkYDVM7rAprW&index=18)
   - tag: `vid/os018`
   - MR: !3
+- [OS19: More VGA, stdlib, mmeory](https://www.youtube.com/watch?v=E26AtZNIj8c&list=PL3Kz_hCNpKSTFCTJtP4-9mkYDVM7rAprW&index=19)
+  - tag: `vid/os019`
+  - MR: !4

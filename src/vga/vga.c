@@ -1,50 +1,106 @@
 #include "vga.h"
 #include "../kernel/kernel.h"
+#include "../memory/memory.h"
 #include "../screen/screen.h"
 
 #define COLOR_BLACK 0x0
 #define COLOR_GREEN 0x2
 #define COLOR_PURPLE 0xf
 
-unsigned char g_320x200x256[] =
-{
-/* MISC */
-	0x63,
-/* SEQ */
-	0x03, 0x01, 0x0F, 0x00, 0x0E,
-/* CRTC */
-	0x5F, 0x4F, 0x50, 0x82, 0x54, 0x80, 0xBF, 0x1F,
-	0x00, 0x41, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-	0x9C, 0x0E, 0x8F, 0x28,	0x40, 0x96, 0xB9, 0xA3,
-	0xFF,
-/* GC */
-	0x00, 0x00, 0x00, 0x00, 0x00, 0x40, 0x05, 0x0F,
-	0xFF,
-/* AC */
-	0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
-	0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
-	0x41, 0x00, 0x0F, 0x00,	0x00
-};
+#define GRAPHICS_REG_ADDR 0x3ce
+#define GRAPHICS_REG_DATA 0x3cf
+#define GRAPHICS_IDX_MISC 0x06
 
-void vga_test() {
-    println("Attempting to switch modes...", 29);
-    write_regs(g_320x200x256);
-    vga_clear_screen();
-	// draw rectangle
-	draw_rectangle(150, 10, 100, 50);
-	// draw some faces
-	draw_happy_face(10,10);
-	draw_happy_face(100,100);
-	draw_happy_face(300,150);
-	// bounds
-	vga_plot_pixel(0, 0, 15);
-	vga_plot_pixel(319, 199, COLOR_PURPLE);
-	// see some colors
-	for (int i = 0; i < 15; i++) {
-		for (int j = 0; j < 100; j++) {
-			vga_plot_pixel(i, 50+j, i);
-		}
+unsigned int vga_mode_var = 0;
+
+// Graphics Registers: 0x3ce = addr, 0x3cf = data
+// see http://www.osdever.net/FreeVGA/vga/graphreg.htm
+unsigned int get_graphics_reg(unsigned int index) {
+	unsigned int saved_addr_reg = ioport_in(GRAPHICS_REG_ADDR);
+	ioport_out(GRAPHICS_REG_ADDR, index);
+	unsigned int graphics_reg_value = ioport_in(GRAPHICS_REG_DATA);
+	ioport_out(GRAPHICS_REG_ADDR, saved_addr_reg); // restore address register
+	return graphics_reg_value;
+}
+void set_graphics_reg(unsigned int index, unsigned int value) {
+	unsigned int saved_addr_reg = ioport_in(GRAPHICS_REG_ADDR);
+	ioport_out(GRAPHICS_REG_ADDR, index);
+	ioport_out(GRAPHICS_REG_DATA, value);
+	ioport_out(GRAPHICS_REG_ADDR, saved_addr_reg); // restore address register
+}
+
+void vga_info() {
+	println("Getting VGA info");
+	unsigned int misc_reg = get_graphics_reg(GRAPHICS_IDX_MISC);
+	// RAM Enable: is VGA checking the memory set by CPU? (are we bothering to use mem-mapped I/O from CPU?)
+	unsigned int ram_enable = (misc_reg & 0b10) >> 1;
+	// Memory Map Select: which area of memory should be used to draw the screen?
+	unsigned int mem_map_select = (misc_reg & 0b1100) >> 2;
+	// Alphanumeric Disable: are we disabling text mode (and instead interpreting memory as pixels?)
+	unsigned int alpha_dis = misc_reg & 1;
+	// Pretty-print each of these fields
+	print("RAM enable: ");
+	if (ram_enable == 0) {
+		println("disabled");
+	} else {
+		println("enabled");
 	}
+	print("Memory Map Select: 0b");
+	char buffer[2];
+	println(itoab(mem_map_select, buffer));
+	print("Alphanumeric disable: 0b");
+	println(itoa(alpha_dis, buffer));
+}
+
+void vga_enter() {
+	if (vga_mode_var == 1) return;
+	vga_mode_var = 1;
+    println("Attempting to switch modes...");
+
+	// Save video memory somewhere else
+	// 0xb8000 to 0xbffff (32K)
+	memcpy(0x0010b8000, 0xb8000, COLS*ROWS*2);
+
+	// Set alphanumeric disable = 1
+	unsigned int misc_reg = get_graphics_reg(GRAPHICS_IDX_MISC);
+	misc_reg |= 1; // bit 0 is alphanumeric disable, set it to 1
+	set_graphics_reg(GRAPHICS_IDX_MISC, misc_reg);
+
+	memset(0xb8000, 0, 60);
+    // vga_clear_screen();
+	// // draw rectangle
+	// draw_rectangle(150, 10, 100, 50);
+	// // draw some faces
+	// draw_happy_face(10,10);
+	// draw_happy_face(100,100);
+	// draw_happy_face(300,150);
+	// // bounds
+	// vga_plot_pixel(0, 0, 15);
+	// vga_plot_pixel(319, 199, COLOR_PURPLE);
+	// // see some colors
+	// for (int i = 0; i < 15; i++) {
+	// 	for (int j = 0; j < 100; j++) {
+	// 		vga_plot_pixel(i, 50+j, i);
+	// 	}
+	// }
+	
+}
+
+void vga_exit() {
+	if (vga_mode_var == 0) return;
+	// Go back to alphanumeric disable 0
+	unsigned int misc_reg = get_graphics_reg(GRAPHICS_IDX_MISC);
+	misc_reg &= 0; // set alphanum disable back to 0
+	misc_reg |= 0b10; // bit 1 is RAM enable, set it to 1
+	misc_reg |= 0b1100; // set mem map select to 11
+	set_graphics_reg(GRAPHICS_IDX_MISC, misc_reg);
+
+	// Restore text-mode video memory
+	memcpy(0xb8000, 0x0010b8000, COLS*ROWS*2);
+
+	vga_mode_var = 0;
+
+	print_prompt();
 }
 
 void draw_rectangle(int x, int y, int width, int height) {
@@ -89,58 +145,3 @@ void vga_plot_pixel(int x, int y, unsigned short color) {
     unsigned char *VGA = (unsigned char*) VGA_ADDRESS;
     VGA[offset] = color;
 }
-
-// Begin copied code
-// Source: https://files.osdev.org/mirrors/geezer/osd/graphics/modes.c
-// Changes:
-// - Initial: only grabbed code I thought was relevant to changing mode and displaying our first pixel (`write_regs`)
-// - Changed ioport_in, ioport_out funcs to instead point to ioport_in, ioport_out funcs defined in kernel.asm
-void write_regs(unsigned char *regs)
-{
-	unsigned i;
-
-/* write MISCELLANEOUS reg */
-	ioport_out(VGA_MISC_WRITE, *regs);
-	regs++;
-/* write SEQUENCER regs */
-	for(i = 0; i < VGA_NUM_SEQ_REGS; i++)
-	{
-		ioport_out(VGA_SEQ_INDEX, i);
-		ioport_out(VGA_SEQ_DATA, *regs);
-		regs++;
-	}
-/* unlock CRTC registers */
-	ioport_out(VGA_CRTC_INDEX, 0x03);
-	ioport_out(VGA_CRTC_DATA, ioport_in(VGA_CRTC_DATA) | 0x80);
-	ioport_out(VGA_CRTC_INDEX, 0x11);
-	ioport_out(VGA_CRTC_DATA, ioport_in(VGA_CRTC_DATA) & ~0x80);
-/* make sure they remain unlocked */
-	regs[0x03] |= 0x80;
-	regs[0x11] &= ~0x80;
-/* write CRTC regs */
-	for(i = 0; i < VGA_NUM_CRTC_REGS; i++)
-	{
-		ioport_out(VGA_CRTC_INDEX, i);
-		ioport_out(VGA_CRTC_DATA, *regs);
-		regs++;
-	}
-/* write GRAPHICS CONTROLLER regs */
-	for(i = 0; i < VGA_NUM_GC_REGS; i++)
-	{
-		ioport_out(VGA_GC_INDEX, i);
-		ioport_out(VGA_GC_DATA, *regs);
-		regs++;
-	}
-/* write ATTRIBUTE CONTROLLER regs */
-	for(i = 0; i < VGA_NUM_AC_REGS; i++)
-	{
-		(void)ioport_in(VGA_INSTAT_READ);
-		ioport_out(VGA_AC_INDEX, i);
-		ioport_out(VGA_AC_WRITE, *regs);
-		regs++;
-	}
-/* lock 16-color palette and unblank display */
-	(void)ioport_in(VGA_INSTAT_READ);
-	ioport_out(VGA_AC_INDEX, 0x20);
-}
-// End copied code

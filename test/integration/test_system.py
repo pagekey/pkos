@@ -20,7 +20,8 @@ def test_help():
     assert screen_text[5].strip() == 'ls: List files'
     assert screen_text[6].strip() == 'clear: Clear screen'
     assert screen_text[7].strip() == 'vga: Run VGA test'
-    assert screen_text[8].strip() == 'pkos>'
+    # assert screen_text[8].strip() == 'vgainfo: Print VGA info'
+    assert screen_text[9].strip() == 'pkos>'
 
 def test_ls():
     driver = QemuDriver()

@@ -8,6 +8,7 @@ RUN apt update && apt install -y \
     g++-multilib \
     gcc-multilib \
     gdb \
+    ghex \
     git \
     grub2-common \
     grub-pc-bin \
