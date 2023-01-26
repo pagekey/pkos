@@ -4,6 +4,10 @@ Welcome to PKOS! This is an operating system written completely from scratch, wo
 
 Check out the accomapnying video/blog article series: https://pagekeytech.com/projects/pkos.
 
+## Docs
+
+See the [docs folder](docs/) for all of the messy notes used to make these videos. You can open it as an Obsidian vault for a nicer experience. It'll also allow you to view the `.canvas` files properly.
+
 ## Getting Started
 
 Try these commands to get started in a hurry.
