@@ -2,7 +2,13 @@
 
 Welcome to PKOS! This is an operating system written completely from scratch, working its way up from assembly to higher level languages like C. This was created for educational purposes and documented in the OS Series from PageKey Tech
 
-Check out the accomapnying video/blog article series: https://pagekeytech.com/projects/pkos.
+## Video Series
+
+This package has been developed on video on the PageKey Tech YouTube channel. You can check the series out [here](https://www.youtube.com/playlist?list=PL3Kz_hCNpKSTFCTJtP4-9mkYDVM7rAprW).
+
+## Discord
+
+[Join the Discord](https://discord.gg/5m5yFgDPF5) to discuss this project and connect with others!
 
 ## Docs
 

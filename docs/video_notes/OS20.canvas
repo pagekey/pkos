@@ -1,0 +1,21 @@
+{
+	"nodes":[
+		{"id":"a12911d6a4106a66","x":-871,"y":-192,"width":392,"height":60,"type":"text","text":"Fixed some VGA issues\nAdded memset, memcpy"},
+		{"id":"f16ba65cb37e47af","x":-871,"y":-248,"width":392,"height":56,"type":"text","text":"## Where We Left Off"},
+		{"id":"ecf44e240c4480cd","x":-452,"y":-248,"width":392,"height":56,"type":"text","text":"## What's Next"},
+		{"id":"7982f7e09c54d180","x":-871,"y":-323,"width":811,"height":60,"type":"text","text":"# PKOS 20"},
+		{"id":"ba67b8f9d9322397","x":-452,"y":-192,"width":250,"height":60,"type":"text","text":"List PCI devices"},
+		{"id":"52b3f9da494b2738","x":-871,"y":185,"width":544,"height":60,"type":"text","text":"# PCI/IDE Research"},
+		{"id":"b4fb3aac57491a08","x":-871,"y":316,"width":592,"height":118,"type":"text","text":"qemu-system-i386 docs\nhttp://www.tin.org/bin/man.cgi?section=1&topic=qemu-system-i386\n- \"2 **PCI IDE** interfaces with hard disk and CD-ROM support\""},
+		{"id":"b1b258c861334506","x":-155,"y":331,"width":487,"height":89,"type":"text","text":"How IDE Controllers Work\nhttps://computer.howstuffworks.com/ide.htm"},
+		{"id":"a0e74b34b397dd0a","x":-852,"y":523,"width":555,"height":230,"type":"text","text":"https://wiki.osdev.org/PCI\n- 3 ways to enumerate PCI\n\t- Brute force\n\t- Recursion - let firmware set it up\n\t- Recursion - DIY bus setup\n- For all three: Need a `checkDevice` method"},
+		{"id":"7c4dcbf9dca210be","x":-310,"y":-78,"width":250,"height":60,"type":"text","text":"Add hard-drive driver"},
+		{"id":"acf47af792925e35","x":-452,"y":32,"width":250,"height":60,"type":"text","text":"Add basic filesystem"}
+	],
+	"edges":[
+		{"id":"e7048ab42e1c68cc","fromNode":"b4fb3aac57491a08","fromSide":"right","toNode":"b1b258c861334506","toSide":"left"},
+		{"id":"86178168afbb911b","fromNode":"b4fb3aac57491a08","fromSide":"bottom","toNode":"a0e74b34b397dd0a","toSide":"top"},
+		{"id":"857f9464358330c4","fromNode":"ba67b8f9d9322397","fromSide":"bottom","toNode":"7c4dcbf9dca210be","toSide":"top"},
+		{"id":"942713b2f79e49d9","fromNode":"7c4dcbf9dca210be","fromSide":"bottom","toNode":"acf47af792925e35","toSide":"top"}
+	]
+}

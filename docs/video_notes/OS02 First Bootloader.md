@@ -58,3 +58,22 @@ qemu-system-i386 -cdrom ./myos.iso
 ```
 - *From \<<https://stackoverflow.com/questions/34268518/creating-a-bootable-iso-image-with-custom-bootloader>\>*
 -   Next video: How this all works, and some fun programs for the bootloader
+
+
+OS Bootloader Notes
+Friday, March 27, 2020
+9:00 AM
+
+<http://mikeos.sourceforge.net/write-your-own-os.html>
+
+<https://stackoverflow.com/questions/43668314/reading-input-in-bios-level-assembly>
+
+<http://ctyme.com/rbrown.htm>
+
+ 
+
+<https://html5up.net/>
+
+<https://50linesofco.de/post/2018-02-28-writing-an-x86-hello-world-bootloader-with-assembly>
+
+ 
