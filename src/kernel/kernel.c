@@ -118,6 +118,8 @@ void handle_keyboard_interrupt() {
 				vga_enter();
 			} else if (streq(command_buffer, "vgainfo")) {
 				vga_info();
+			} else if (streq(command_buffer, "lspci")) {
+				lspci();
 			} else if (streq(command_buffer, "help")) {
 				println("ls: List files");
 				println("clear: Clear screen");
