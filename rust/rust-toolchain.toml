@@ -3,5 +3,5 @@
 
 [toolchain]
 # equals to rust nightly 1.54 as of the release day 2021-05-10
-channel = "nightly-2021-05-10"
+channel = "nightly-2023-06-21"
 components = [ "rust-src", "rust-std", "rustc", "cargo" ]
