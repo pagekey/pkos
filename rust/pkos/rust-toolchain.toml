@@ -1,0 +1,7 @@
+# With this file, another toolchain to the currently selected one will be used, when you execute `cargo build`.
+# https://rust-lang.github.io/rustup/overrides.html
+
+[toolchain]
+# equals to rust nightly 1.54 as of the release day 2021-05-10
+channel = "nightly-2021-05-10"
+components = [ "rust-src", "rust-std", "rustc", "cargo" ]

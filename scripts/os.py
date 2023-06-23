@@ -121,7 +121,7 @@ def clean():
     os.system('rm -rf build dist public *.gcno a.out')
 
 def print_usage():
-    print("Usage: %s [build,test,run,run_debug,clean]" % sys.argv[0])
+    print("Usage: %s [build,test,test-unit,run,run_debug,clean]" % sys.argv[0])
     sys.exit(1)
 
 if __name__ == "__main__":
@@ -131,6 +131,8 @@ if __name__ == "__main__":
         build()
     elif sys.argv[1] == 'test':
         test()
+    elif sys.argv[1] == 'test-unit':
+        test_unit()
     elif sys.argv[1] == 'run':
         run()
     elif sys.argv[1] == 'run_debug':
