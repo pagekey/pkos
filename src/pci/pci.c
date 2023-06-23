@@ -40,15 +40,15 @@ void lspci() {
                     continue;
                 }
                 print("Bus ");
-                print(itoa(i, string_rep));
+                print(itoa(i));
                 print(" Device ");
-                print(itoa(j, string_rep));
+                print(itoa(j));
                 print(" Function ");
-                print(itoa(k, string_rep));
+                print(itoa(k));
                 print(": Vendor=");
-                print(itoah(vendor_id, *string_rep));
+                print(itoah(vendor_id));
                 print(" Device=");
-                print(itoah(device_id, *string_rep));
+                print(itoah(device_id));
                 print(" Class=");
                 print(itoah(base_class, *string_rep));
                 print(" SubClass=");

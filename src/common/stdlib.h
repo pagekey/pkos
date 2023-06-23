@@ -3,9 +3,9 @@
 
 #include "types.h"
 
-char* itoa(int integer, char* result);
-char* itoah(int integer, char* result);
-char* itoab(int integer, char* result);
+char* itoa(int integer);
+char* itoah(int integer);
+char* itoab(int integer);
 
 bool streq(char* string1, char* string2);
 bool safe_streq(char* string1, int str1len, char* string2, int str2len);
