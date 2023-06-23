@@ -26,9 +26,16 @@ u32 read_pci_port(u8 bus, u8 device, u8 function, u8 offset) {
 
 void lspci() {
     println("hello pci");
-    u32 retval = read_pci_port(0, 0, 0, 5);
+    u32 pci_data = read_pci_port(0, 0, 0, 0);
     println("read:");
-    u8 result[10];
+    u8 string_rep[10];
     print("0x");
-    println(itoah(retval, *result));
+    println(itoah(pci_data, *string_rep));
+    println("These fields mean:");
+    u16 vendor_id = pci_data & 0xffff;
+    println("Vendor ID:");
+    println(itoah(vendor_id, *string_rep));
+    u16 device_id = (pci_data >> 16) & 0xffff;
+    println("Device ID:");
+    println(itoah(device_id, *string_rep));
 }
