@@ -1,9 +1,9 @@
-#include "../common/types.h"
+#include "pci.h"
 
 #define CONFIG_ADDRESS_PORT 0xCF8
 #define CONFIG_DATA_PORT 0xCFC
 
-u32 read_pci_port(u8 bus, u8 device, u8 function, u8 offset) {
+u32 read_pci_port(u8 bus, u8 slot, u8 function, u8 offset) {
     u32 address = 0;
     
     // Clear out any bits not within range
@@ -13,7 +13,7 @@ u32 read_pci_port(u8 bus, u8 device, u8 function, u8 offset) {
     address |= 0x80000000; // bit 31: enable = 1
     // bits 30-24: reserved, leave them as 0
     address |= (bus << 16); // bits 23-16: bus
-    address |= (device << 11); // bits 15-11: device
+    address |= (slot << 11); // bits 15-11: device/slot
     address |= (function << 8); // bits 10-8: function
     address |= offset; // bits 7-0: offset
 
@@ -24,19 +24,24 @@ u32 read_pci_port(u8 bus, u8 device, u8 function, u8 offset) {
     return inl(CONFIG_DATA_PORT);
 }
 
+struct PCI_Device get_pci_device(u8 bus, u8 slot, u8 function) {
+    struct PCI_Device device;
+    u32 pci_data = read_pci_port(bus, slot, function, 0);
+    device.vendor_id = pci_data & 0xffff;
+    device.device_id = (pci_data >> 16) & 0xffff;
+    pci_data = read_pci_port(bus, slot, function, 0x09);
+    device.base_class = (pci_data >> 16) & 0xff;
+    device.sub_class = (pci_data >> 8) & 0xff;
+    device.prog_interface = pci_data & 0xff;
+    return device;
+}
+
 void lspci() {
-    u8 string_rep[10];
     for (u8 i = 0; i < 255; i++) {
         for (u8 j = 0; j < 255; j++) {
             for (u8 k = 0; k < 8; k++) {
-                u32 pci_data = read_pci_port(i, j, k, 0);
-                u16 vendor_id = pci_data & 0xffff;
-                u16 device_id = (pci_data >> 16) & 0xffff;
-                pci_data = read_pci_port(i, j, k, 0x09);
-                u8 base_class = (pci_data >> 16) & 0xff;
-                u8 sub_class = (pci_data >> 8) & 0xff;
-                u8 progInterface = pci_data & 0xff;
-                if (vendor_id == 0xFFFF) {
+                struct PCI_Device device = get_pci_device(i, j, k);
+                if (device.vendor_id == 0xFFFF) {
                     continue;
                 }
                 print("Bus ");
@@ -46,15 +51,15 @@ void lspci() {
                 print(" Function ");
                 print(itoa(k));
                 print(": Vendor=");
-                print(itoah(vendor_id));
+                print(itoah(device.vendor_id));
                 print(" Device=");
-                print(itoah(device_id));
+                print(itoah(device.device_id));
                 print(" Class=");
-                print(itoah(base_class, *string_rep));
+                print(itoah(device.base_class));
                 print(" SubClass=");
-                print(itoah(sub_class, *string_rep));
+                print(itoah(device.sub_class));
                 print(" ProgIf=");
-                println(itoah(progInterface, *string_rep));
+                println(itoah(device.prog_interface));
             }
         }
     }
