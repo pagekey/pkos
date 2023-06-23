@@ -18,6 +18,8 @@ global load_idt
 global keyboard_handler
 global ioport_in
 global ioport_out
+global inl
+global outl
 global enable_interrupts
 
 extern main			; Defined in kernel.c
@@ -57,6 +59,17 @@ ioport_out:
 	mov eax, [esp + 8] 	; value to write. 8 bits
 	; Format: out <DST_IO_PORT>, <VALUE_TO_WRITE>
 	out dx, al
+	ret
+
+inl:
+	mov edx, [esp + 4]
+	in eax, dx
+	ret
+
+outl:
+	mov edx, [esp + 4]
+	mov eax, [esp + 8]
+	out dx, eax
 	ret
 
 start:

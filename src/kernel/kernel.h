@@ -40,6 +40,10 @@ extern void load_gdt();
 extern void keyboard_handler();
 extern char ioport_in(unsigned short port);
 extern void ioport_out(unsigned short port, unsigned char data);
+
+extern void inl(u16 port);
+extern void outl(u16 port, u32 data);
+
 extern void load_idt(struct IDT_pointer* idt_address);
 extern void enable_interrupts();
 
