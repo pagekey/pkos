@@ -29,6 +29,9 @@ struct PCI_Device get_pci_device(u8 bus, u8 slot, u8 function) {
     u32 pci_data = read_pci_port(bus, slot, function, 0);
     device.vendor_id = pci_data & 0xffff;
     device.device_id = (pci_data >> 16) & 0xffff;
+    pci_data = read_pci_port(bus, slot, function, 0x04);
+    device.command = pci_data & 0xffff;
+    device.status = (pci_data >> 16) & 0xffff;
     pci_data = read_pci_port(bus, slot, function, 0x09);
     device.base_class = (pci_data >> 16) & 0xff;
     device.sub_class = (pci_data >> 8) & 0xff;
@@ -63,4 +66,13 @@ void lspci() {
             }
         }
     }
+}
+
+void idetest() {
+    struct PCI_Device ide_device = get_pci_device(0,1,1); // hard coded based on lspci output
+    println("Hello world");
+    print("command: ");
+    println(itoah(ide_device.command));
+    print("status: ");
+    println(itoah(ide_device.status));
 }
