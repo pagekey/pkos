@@ -42,7 +42,14 @@ void lspci() {
                 print(itoah(vendor_id, *string_rep));
                 u16 device_id = (pci_data >> 16) & 0xffff;
                 print(" Device=");
-                println(itoah(device_id, *string_rep));
+                print(itoah(device_id, *string_rep));
+                pci_data = read_pci_port(i, j, k, 0x0a);
+                u8 base_class = (pci_data >> 8) & 0xff;
+                u8 sub_class = pci_data & 0xff;
+                print(" Base Class=");
+                print(itoah(base_class, *string_rep));
+                print(" SubClass=");
+                println(itoah(sub_class, *string_rep));
             }
         }
     }
