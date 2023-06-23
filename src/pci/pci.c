@@ -71,8 +71,12 @@ void lspci() {
 void idetest() {
     struct PCI_Device ide_device = get_pci_device(0,1,1); // hard coded based on lspci output
     println("Hello world");
-    print("command: ");
+    print("prog iface: 0b");
+    println(itoab(ide_device.prog_interface));
+    print("command: 0x");
     println(itoah(ide_device.command));
-    print("status: ");
+    print("status: 0x");
     println(itoah(ide_device.status));
+    print("iface: 0x");
+    println(itoah(ide_device.prog_interface));
 }
