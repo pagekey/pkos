@@ -30,6 +30,13 @@ void safe_print(char* string, int len) {
 }
 
 void printchar(char c) {
+	if (cursor_row >= ROWS) {
+		cursor_row = cursor_row % ROWS;
+		// clear the row before we print
+		for (int i = 0; i < COLS; i++) {
+			printchar_at(' ', cursor_row, i);
+		}
+	}
     printchar_at(c, cursor_row, cursor_col++);
     if (cursor_col >= COLS) {
         cursor_col = cursor_col % COLS;

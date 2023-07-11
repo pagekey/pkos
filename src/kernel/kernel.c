@@ -120,10 +120,13 @@ void handle_keyboard_interrupt() {
 				vga_info();
 			} else if (streq(command_buffer, "lspci")) {
 				lspci();
+			} else if (streq(command_buffer, "ide")) {
+				idetest();
 			} else if (streq(command_buffer, "help")) {
 				println("clear: Clear screen");
 				println("ls: List files");
 				println("lspci: Enumerate PCI devices");
+				println("ide: Run ide test");
 				println("vga: Run VGA test");
 				println("vgainfo: Print VGA info");
 			} else if (command_len < 1) {

@@ -38,16 +38,18 @@ char* _itoa(int integer, char* result, int base) {
 }
 
 // Integer to ASCII
-char* itoa(int integer, char* result) {
-	return _itoa(integer, result, 10);
+char itoa_buffer[256];
+
+char* itoa(int integer) {
+	return _itoa(integer, *itoa_buffer, 10);
 }
 // Integer to ASCII HEX
-char* itoah(int integer, char* result) {
-	return _itoa(integer, result, 16);
+char* itoah(int integer) {
+	return _itoa(integer, *itoa_buffer, 16);
 }
 // Integer to ASCII Binary
-char* itoab(int integer, char* result) {
-	return _itoa(integer, result, 2);
+char* itoab(int integer) {
+	return _itoa(integer, *itoa_buffer, 2);
 }
 
 bool streq(char* string1, char* string2) {

@@ -108,20 +108,28 @@ def test_unit():
 def test_integration():
     pretty_call('pytest %s' % os.path.join(REPO_ROOT, 'test', 'integration'))
 
+SATA_IMG_PATH = 'dist/SATA.img'
+SATA_DRIVE_OPTS = f'-drive id=disk,file={SATA_IMG_PATH},if=none -device ahci,id=ahci -device ide-hd,drive=disk,bus=ahci.0'
 def run():
     build()
-    pretty_call('qemu-system-i386 -kernel %s -monitor stdio' % KERNEL_OUT)
+    if not os.path.exists(SATA_IMG_PATH):
+        with open(SATA_IMG_PATH, 'w'): # just write a blank file for now
+            pass
+    pretty_call(f'qemu-system-i386 -kernel {KERNEL_OUT} -monitor stdio {SATA_DRIVE_OPTS}')
 
 def run_debug():
     build(debug=True)
-    os.system(f'qemu-system-i386 -kernel {KERNEL_OUT} -s -S &')
+    if not os.path.exists(SATA_IMG_PATH):
+        with open(SATA_IMG_PATH, 'w'): # just write a blank file for now
+            pass
+    os.system(f'qemu-system-i386 -kernel {KERNEL_OUT}  {SATA_DRIVE_OPTS} -s -S &')
     os.system('gdb -x .gdbinit')
 
 def clean():
     os.system('rm -rf build dist public *.gcno a.out')
 
 def print_usage():
-    print("Usage: %s [build,test,run,run_debug,clean]" % sys.argv[0])
+    print("Usage: %s [build,test,test-unit,run,run_debug,clean]" % sys.argv[0])
     sys.exit(1)
 
 if __name__ == "__main__":
@@ -131,6 +139,8 @@ if __name__ == "__main__":
         build()
     elif sys.argv[1] == 'test':
         test()
+    elif sys.argv[1] == 'test-unit':
+        test_unit()
     elif sys.argv[1] == 'run':
         run()
     elif sys.argv[1] == 'run_debug':
