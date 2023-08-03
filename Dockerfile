@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:23.04
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -19,9 +19,14 @@ RUN apt update && apt install -y \
     xorriso \
     python3 \
     python3-pip \
+    python3-venv \
     && rm -rf /var/lib/apt/lists
 
 WORKDIR /pkos
 
 COPY requirements.txt .
-RUN pip install -r requirements.txt
+
+RUN python3 -m venv venv \
+    && . venv/bin/activate \
+    && pip install --upgrade pip \
+    && pip install -r requirements.txt
